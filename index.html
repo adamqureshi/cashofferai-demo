@@ -505,13 +505,57 @@
             return /^\d{5}(-\d{4})?$/.test(zip);
         }
 
-        function decodeVIN(vin) {
-            // Simplified VIN decoder for demo
-            const makes = ['Toyota', 'Honda', 'Ford', 'Chevrolet', 'BMW', 'Mercedes-Benz', 'Audi'];
-            const models = ['Camry', 'Accord', 'F-150', 'Silverado', '3 Series', 'C-Class', 'A4'];
-            const years = ['2020', '2021', '2022', '2023', '2024'];
-            
-            return {
+        async function decodeVIN(vin) {
+    try {
+        // Use the free NHTSA VIN decoder API
+        const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`);
+        const data = await response.json();
+        
+        // Extract the relevant information from the API response
+        let vehicleInfo = {
+            year: '',
+            make: '',
+            model: '',
+            trim: '',
+            engine: '',
+            bodyClass: ''
+        };
+        
+        // Parse the NHTSA data
+        data.Results.forEach(item => {
+            switch(item.VariableId) {
+                case 29: // Model Year
+                    vehicleInfo.year = item.Value;
+                    break;
+                case 26: // Make
+                    vehicleInfo.make = item.Value;
+                    break;
+                case 28: // Model
+                    vehicleInfo.model = item.Value;
+                    break;
+                case 109: // Trim
+                    vehicleInfo.trim = item.Value || 'Base';
+                    break;
+                case 13: // Engine Model
+                    vehicleInfo.engine = item.Value;
+                    break;
+                case 5: // Body Class
+                    vehicleInfo.bodyClass = item.Value;
+                    break;
+            }
+        });
+        
+        // If we didn't get required fields, the VIN might be invalid
+        if (!vehicleInfo.year || !vehicleInfo.make || !vehicleInfo.model) {
+            return null;
+        }
+        
+        return vehicleInfo;
+    } catch (error) {
+        console.error('VIN decode error:', error);
+        return null;
+    }
+}
                 year: years[Math.floor(Math.random() * years.length)],
                 make: makes[Math.floor(Math.random() * makes.length)],
                 model: models[Math.floor(Math.random() * models.length)],
@@ -595,11 +639,59 @@
                     break;
                     
                 case 'vin':
-                    const cleanedVIN = input.replace(/[^A-HJ-NPR-Z0-9]/gi, '').toUpperCase();
-                    if (validateVIN(cleanedVIN)) {
-                        state.userData.vin = cleanedVIN;
-                        state.userData.vehicleInfo = decodeVIN(cleanedVIN);
-                        state.currentStep = 'zip';
+    const cleanedVIN = input.replace(/[^A-HJ-NPR-Z0-9]/gi, '').toUpperCase();
+    if (validateVIN(cleanedVIN)) {
+        state.userData.vin = cleanedVIN;
+        
+        // Show loading message
+        addBotMessage("Decoding your VIN... please wait a moment.", false);
+        
+        // Decode the VIN with real API
+        decodeVIN(cleanedVIN).then(vehicleInfo => {
+            if (vehicleInfo) {
+                state.userData.vehicleInfo = vehicleInfo;
+                state.currentStep = 'zip';
+                
+                // Build the vehicle description
+                let vehicleDesc = `<strong>${vehicleInfo.year} ${vehicleInfo.make} ${vehicleInfo.model}`;
+                if (vehicleInfo.trim && vehicleInfo.trim !== 'Base') {
+                    vehicleDesc += ` ${vehicleInfo.trim}`;
+                }
+                vehicleDesc += `</strong>`;
+                
+                let additionalInfo = '';
+                if (vehicleInfo.bodyClass) {
+                    additionalInfo += `<br>Type: ${vehicleInfo.bodyClass}`;
+                }
+                if (vehicleInfo.engine) {
+                    additionalInfo += `<br>Engine: ${vehicleInfo.engine}`;
+                }
+                
+                addBotMessage(`<div>Excellent! I've decoded your VIN:<br>
+                    ${vehicleDesc}
+                    ${additionalInfo}
+                    <span class="vin-status valid">✓ VIN Validated</span><br><br>
+                    Now, what's your ZIP code? This helps us calculate the most accurate offer based on your location.</div>`, false);
+            } else {
+                // VIN couldn't be decoded
+                state.currentStep = 'vin'; // Stay on VIN step
+                addBotMessage(`<div>I couldn't decode that VIN. This might mean:<br>
+                    • The VIN has a typo<br>
+                    • It's a very new or rare vehicle<br>
+                    • There was a connection issue<br>
+                    <span class="vin-status invalid">✗ Decode Failed</span><br>
+                    Please double-check your VIN and try again, or type "skip" to enter your vehicle details manually.</div>`, false);
+            }
+        }).catch(error => {
+            state.currentStep = 'vin';
+            addBotMessage("There was an issue decoding your VIN. Please check it and try again.", false);
+        });
+    } else {
+        addBotMessage(`<div>That VIN doesn't appear to be valid. VINs are exactly 17 characters long and don't include the letters I, O, or Q.<br>
+            <span class="vin-status invalid">✗ Invalid VIN</span><br>
+            Please double-check and enter your VIN again.</div>`);
+    }
+    break;
                         
                         const vehicleInfo = state.userData.vehicleInfo;
                         addBotMessage(`<div>Excellent! I've decoded your VIN:<br>
