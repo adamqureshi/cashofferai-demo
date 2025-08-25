@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            background: #f8f9fa;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,51 +25,94 @@
             width: 100%;
             max-width: 500px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
             display: flex;
             flex-direction: column;
             height: 90vh;
-            max-height: 700px;
+            max-height: 800px;
             overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
 
         .header {
-            background: #2c2c2c;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             color: white;
-            padding: 20px;
+            padding: 24px;
             text-align: center;
-            border-radius: 12px 12px 0 0;
         }
 
         .header h1 {
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
         }
 
         .header p {
             font-size: 14px;
-            opacity: 0.9;
-            margin-top: 5px;
+            opacity: 0.95;
+            margin-top: 6px;
+            font-weight: 400;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .progress-step {
+            width: 32px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            background: #3b82f6;
+            transform: scaleX(1.2);
+        }
+
+        .progress-step.completed {
+            background: #10b981;
         }
 
         .chat-container {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: #fafafa;
+            padding: 24px 20px;
+            background: #ffffff;
+            scroll-behavior: smooth;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 3px;
         }
 
         .message {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
-            animation: slideIn 0.3s ease;
+            animation: fadeInUp 0.4s ease;
         }
 
-        @keyframes slideIn {
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(12px);
             }
             to {
                 opacity: 1;
@@ -86,30 +129,35 @@
         }
 
         .message-content {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 20px;
             word-wrap: break-word;
+            font-size: 15px;
+            line-height: 1.5;
         }
 
         .message.bot .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
+            background: #f1f3f5;
+            color: #1e293b;
+            border-bottom-left-radius: 6px;
         }
 
         .message.user .message-content {
-            background: #4a4a4a;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
+            border-bottom-right-radius: 6px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
 
         .typing-indicator {
             display: none;
-            padding: 12px 16px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 18px;
+            padding: 14px 18px;
+            background: #f1f3f5;
+            border-radius: 20px;
+            border-bottom-left-radius: 6px;
             width: fit-content;
+            margin-bottom: 20px;
         }
 
         .typing-indicator.active {
@@ -121,9 +169,9 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #999;
+            background: #94a3b8;
             margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out;
+            animation: pulse 1.4s infinite ease-in-out;
         }
 
         .typing-indicator span:nth-child(1) {
@@ -134,175 +182,208 @@
             animation-delay: -0.16s;
         }
 
-        @keyframes bounce {
+        @keyframes pulse {
             0%, 80%, 100% {
                 transform: scale(1);
                 opacity: 0.5;
             }
             40% {
-                transform: scale(1.3);
+                transform: scale(1.2);
                 opacity: 1;
             }
+        }
+
+        /* Suggested Questions - Always Visible */
+        .suggestions-container {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e5e7eb;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .suggestions-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .suggestions-wrapper {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .suggestions-wrapper::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .suggestions-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .suggestions-wrapper::-webkit-scrollbar-thumb {
+            background: #e5e7eb;
+            border-radius: 2px;
+        }
+
+        .suggestion-chip {
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .suggestion-chip:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
         }
 
         .input-container {
             padding: 20px;
             background: white;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #e5e7eb;
         }
 
         .input-wrapper {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
+            background: #f8f9fa;
+            border-radius: 28px;
+            padding: 6px 6px 6px 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            background: white;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
         }
 
         .message-input {
             flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 24px;
-            font-size: 14px;
+            padding: 8px 0;
+            border: none;
+            background: transparent;
+            font-size: 15px;
             outline: none;
-            transition: border-color 0.3s;
+            color: #1e293b;
         }
 
-        .message-input:focus {
-            border-color: #666;
+        .message-input::placeholder {
+            color: #94a3b8;
         }
 
         .send-button {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: #2c2c2c;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
             color: white;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
         }
 
         .send-button:hover {
-            background: #444;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
         .send-button:disabled {
-            background: #ccc;
+            background: #e5e7eb;
             cursor: not-allowed;
+            box-shadow: none;
         }
 
-        .suggestions-button {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #f0f0f0;
-            border: 2px solid #ddd;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
-            position: relative;
-        }
-
-        .suggestions-button:hover {
-            background: #e0e0e0;
-            border-color: #999;
-        }
-
-        .suggestions-popup {
-            position: absolute;
-            bottom: 60px;
-            left: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            padding: 12px;
-            min-width: 250px;
-            display: none;
-            z-index: 1000;
-        }
-
-        .suggestions-popup.active {
-            display: block;
-            animation: popIn 0.3s ease;
-        }
-
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .suggestion-item {
-            padding: 10px 12px;
-            margin: 4px 0;
-            background: #f8f8f8;
+        /* VIN Helper Text */
+        .vin-helper {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: #f1f5f9;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 13px;
-            transition: background 0.2s;
-        }
-
-        .suggestion-item:hover {
-            background: #e8e8e8;
-        }
-
-        .progress-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px;
-            background: #f0f0f0;
-        }
-
-        .progress-step {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #ddd;
-            transition: all 0.3s;
-        }
-
-        .progress-step.active {
-            background: #4a4a4a;
-            transform: scale(1.2);
-        }
-
-        .progress-step.completed {
-            background: #6a6a6a;
+            border-left: 3px solid #3b82f6;
         }
 
         /* VIN validation indicator */
         .vin-status {
             font-size: 12px;
-            margin-top: 4px;
-            padding: 4px 8px;
-            border-radius: 4px;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
             display: inline-block;
+            font-weight: 600;
         }
 
         .vin-status.valid {
-            background: #d4f4dd;
-            color: #2e7d32;
+            background: #d1fae5;
+            color: #065f46;
         }
 
         .vin-status.invalid {
-            background: #ffebee;
-            color: #c62828;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Offer Card Styling */
+        .offer-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e5e7eb 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-top: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .offer-amount {
+            font-size: 36px;
+            font-weight: 800;
+            color: #10b981;
+            margin: 20px 0;
+            text-align: center;
         }
 
         .loading-spinner {
             display: inline-block;
             position: static !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .container {
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .header {
+                border-radius: 0;
+            }
+            
+            .message-content {
+                max-width: 85%;
+            }
         }
     </style>
 </head>
@@ -325,14 +406,15 @@
             <!-- Messages will appear here -->
         </div>
 
+        <div class="suggestions-container" id="suggestionsContainer">
+            <div class="suggestions-label">Suggested Questions</div>
+            <div class="suggestions-wrapper" id="suggestionsWrapper">
+                <!-- Suggestions will appear here -->
+            </div>
+        </div>
+
         <div class="input-container">
             <div class="input-wrapper">
-                <button class="suggestions-button" id="suggestionsBtn">
-                    💡
-                    <div class="suggestions-popup" id="suggestionsPopup">
-                        <!-- Suggestions will appear here -->
-                    </div>
-                </button>
                 <input 
                     type="text" 
                     class="message-input" 
@@ -369,8 +451,8 @@
         const chatContainer = document.getElementById('chatContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const suggestionsBtn = document.getElementById('suggestionsBtn');
-        const suggestionsPopup = document.getElementById('suggestionsPopup');
+        const suggestionsWrapper = document.getElementById('suggestionsWrapper');
+        const suggestionsContainer = document.getElementById('suggestionsContainer');
 
         // Suggestions for each step
         const suggestions = {
@@ -381,36 +463,51 @@
             ],
             name: [
                 "Why do you need my name?",
-                "Is this information secure?"
+                "Is my information secure?",
+                "Skip to VIN entry"
             ],
             email: [
-                "Will you spam my email?",
-                "Can I use a different email later?"
+                "Will you share my email?",
+                "Can I change this later?",
+                "Why is email required?"
             ],
             phone: [
-                "Why do you need my phone number?",
-                "Will you call me immediately?"
+                "Text only, no calls please",
+                "Why do you need my phone?",
+                "Will you call immediately?"
             ],
             vin: [
                 "Where can I find my VIN?",
-                "What if I don't have my VIN?",
-                "Why do you need the VIN?"
+                "I don't have my VIN",
+                "What's a VIN number?"
             ],
             zip: [
                 "Why do you need my location?",
-                "Do you buy cars nationwide?"
+                "Do you buy cars nationwide?",
+                "Is this for pickup?"
             ],
             damages: [
-                "Minor scratches and dents",
                 "No damage - excellent condition",
+                "Minor wear and tear only",
                 "Some mechanical issues",
                 "Body damage from accident"
             ]
         };
 
+        // Example VINs for testing
+        const exampleVINs = [
+            "Try: 1HGCM82633A004352",
+            "Try: 5YJSA1DG9DFP14705",
+            "Try: 1FTFW1ET5DFC10312"
+        ];
+
         // Initialize chat
         function init() {
-            addBotMessage("Hi! I'm your Cash Offer AI assistant. I'll help you get an instant cash offer for your vehicle. Let's start with some basic information. What's your name?");
+            // Add initial message immediately
+            setTimeout(() => {
+                addMessage("👋 Hi! I'm your Cash Offer AI assistant. I'll help you get an instant cash offer for your vehicle in just 2 minutes. Let's start with your name.", 'bot');
+            }, 100);
+            
             updateSuggestions();
             
             messageInput.addEventListener('keypress', (e) => {
@@ -420,35 +517,46 @@
             });
             
             sendButton.addEventListener('click', sendMessage);
-            
-            suggestionsBtn.addEventListener('click', toggleSuggestions);
-            
-            document.addEventListener('click', (e) => {
-                if (!suggestionsBtn.contains(e.target)) {
-                    suggestionsPopup.classList.remove('active');
-                }
-            });
-        }
-
-        function toggleSuggestions() {
-            suggestionsPopup.classList.toggle('active');
         }
 
         function updateSuggestions() {
             const currentSuggestions = suggestions[state.currentStep] || [];
-            suggestionsPopup.innerHTML = '';
+            suggestionsWrapper.innerHTML = '';
             
-            currentSuggestions.forEach(suggestion => {
-                const item = document.createElement('div');
-                item.className = 'suggestion-item';
-                item.textContent = suggestion;
-                item.addEventListener('click', () => {
-                    messageInput.value = suggestion;
-                    suggestionsPopup.classList.remove('active');
+            // Add VIN examples if on VIN step
+            if (state.currentStep === 'vin') {
+                // Add example VIN as first suggestion
+                const exampleChip = document.createElement('div');
+                exampleChip.className = 'suggestion-chip';
+                exampleChip.style.background = '#e0f2fe';
+                exampleChip.style.borderColor = '#0284c7';
+                exampleChip.style.color = '#0c4a6e';
+                exampleChip.textContent = exampleVINs[Math.floor(Math.random() * exampleVINs.length)];
+                exampleChip.addEventListener('click', () => {
+                    const vin = exampleChip.textContent.replace('Try: ', '');
+                    messageInput.value = vin;
                     sendMessage();
                 });
-                suggestionsPopup.appendChild(item);
+                suggestionsWrapper.appendChild(exampleChip);
+            }
+            
+            currentSuggestions.forEach(suggestion => {
+                const chip = document.createElement('div');
+                chip.className = 'suggestion-chip';
+                chip.textContent = suggestion;
+                chip.addEventListener('click', () => {
+                    messageInput.value = suggestion;
+                    sendMessage();
+                });
+                suggestionsWrapper.appendChild(chip);
             });
+
+            // Hide suggestions container if no suggestions
+            if (currentSuggestions.length === 0 && state.currentStep !== 'vin') {
+                suggestionsContainer.style.display = 'none';
+            } else {
+                suggestionsContainer.style.display = 'block';
+            }
         }
 
         function addBotMessage(text, includeTyping = true) {
@@ -457,7 +565,7 @@
                 setTimeout(() => {
                     hideTypingIndicator();
                     addMessage(text, 'bot');
-                }, 1000 + Math.random() * 500);
+                }, 800 + Math.random() * 400);
             } else {
                 addMessage(text, 'bot');
             }
@@ -473,7 +581,11 @@
             
             messageDiv.appendChild(contentDiv);
             chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Smooth scroll to bottom
+            setTimeout(() => {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 100);
         }
 
         function showTypingIndicator() {
@@ -513,13 +625,9 @@
         // Real VIN decoder using NHTSA API
         async function decodeVIN(vin) {
             try {
-                // Use the free NHTSA VIN decoder API
                 const response = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevin/${vin}?format=json`);
                 const data = await response.json();
                 
-                console.log('NHTSA API Response:', data); // Debug log
-                
-                // Extract the relevant information from the API response
                 let vehicleInfo = {
                     year: '',
                     make: '',
@@ -531,52 +639,27 @@
                     fuelType: ''
                 };
                 
-                // Parse the NHTSA data
                 if (data.Results) {
                     data.Results.forEach(item => {
                         if (item.Value && item.Value !== null && item.Value !== 'Not Applicable') {
                             switch(item.VariableId) {
-                                case 29: // Model Year
-                                    vehicleInfo.year = item.Value;
-                                    break;
-                                case 26: // Make
-                                    vehicleInfo.make = item.Value;
-                                    break;
-                                case 28: // Model
-                                    vehicleInfo.model = item.Value;
-                                    break;
-                                case 109: // Trim
-                                    vehicleInfo.trim = item.Value;
-                                    break;
-                                case 13: // Engine Model
-                                case 71: // Engine Displacement
-                                    if (!vehicleInfo.engine && item.Value) {
-                                        vehicleInfo.engine = item.Value;
-                                    }
-                                    break;
-                                case 5: // Body Class
-                                    vehicleInfo.bodyClass = item.Value;
-                                    break;
-                                case 15: // Drive Type
-                                    vehicleInfo.driveType = item.Value;
-                                    break;
-                                case 24: // Fuel Type - Primary
-                                    vehicleInfo.fuelType = item.Value;
-                                    break;
+                                case 29: vehicleInfo.year = item.Value; break;
+                                case 26: vehicleInfo.make = item.Value; break;
+                                case 28: vehicleInfo.model = item.Value; break;
+                                case 109: vehicleInfo.trim = item.Value; break;
+                                case 71: vehicleInfo.engine = item.Value; break;
+                                case 5: vehicleInfo.bodyClass = item.Value; break;
+                                case 15: vehicleInfo.driveType = item.Value; break;
+                                case 24: vehicleInfo.fuelType = item.Value; break;
                             }
                         }
                     });
                 }
                 
-                console.log('Parsed vehicle info:', vehicleInfo); // Debug log
-                
-                // Check if we got the minimum required fields
                 if (!vehicleInfo.year || !vehicleInfo.make) {
-                    console.log('Missing required fields, using fallback');
                     return null;
                 }
                 
-                // Clean up the model name if needed
                 if (!vehicleInfo.model) {
                     vehicleInfo.model = 'Model';
                 }
@@ -621,12 +704,17 @@
             
             // Handle common questions
             if (lowerInput.includes('how does this work') || lowerInput.includes('what information')) {
-                addBotMessage("I'll collect some basic information about you and your vehicle, then provide you with an instant cash offer. The process takes just a few minutes. Let's continue - what's your name?");
+                addBotMessage("It's simple! I'll ask for basic contact info, your vehicle's VIN number, and condition. Then I'll generate an instant cash offer. The whole process takes about 2 minutes. Ready? What's your name?");
                 return;
             }
             
             if (lowerInput.includes('where') && lowerInput.includes('vin')) {
-                addBotMessage("You can find your VIN on the driver's side dashboard (visible through the windshield), the driver's door jamb, or on your registration documents. Please enter your 17-character VIN when you're ready.");
+                addBotMessage(`<div>You can find your VIN in these locations:<br>
+                    • Driver's side dashboard (look through windshield)<br>
+                    • Driver's door jamb sticker<ためbr>
+                    • Vehicle registration or insurance card<br>
+                    <div class="vin-helper">💡 VIN is exactly 17 characters - letters and numbers, no spaces</div>
+                    </div>`);
                 return;
             }
             
@@ -637,9 +725,9 @@
                     if (input.length > 1) {
                         state.userData.name = input;
                         state.currentStep = 'email';
-                        addBotMessage(`Nice to meet you, ${input}! Now, what's your email address? We'll use this to send you the official offer details.`);
+                        addBotMessage(`Perfect, ${input}! 📧 What's your best email address? We'll send your official offer there.`);
                     } else {
-                        addBotMessage("Please provide your full name so we can personalize your offer.");
+                        addBotMessage("I'll need your name to create your personalized offer. What should I call you?");
                     }
                     break;
                     
@@ -647,9 +735,9 @@
                     if (validateEmail(input)) {
                         state.userData.email = input;
                         state.currentStep = 'phone';
-                        addBotMessage("Great! What's your phone number? We may need to contact you to finalize the offer.");
+                        addBotMessage("Great! 📱 What's your phone number? We'll text you when we're ready to pick up your vehicle.");
                     } else {
-                        addBotMessage("Please provide a valid email address (e.g., name@example.com)");
+                        addBotMessage("Hmm, that doesn't look like a valid email. Please enter it in this format: name@example.com");
                     }
                     break;
                     
@@ -657,9 +745,11 @@
                     if (validatePhone(input)) {
                         state.userData.phone = input.replace(/\D/g, '');
                         state.currentStep = 'vin';
-                        addBotMessage("Perfect! Now I need your vehicle's VIN (Vehicle Identification Number). This is a 17-character code that helps us identify your exact vehicle. Where can I find it? Just ask if you need help!");
+                        addBotMessage(`<div>Perfect! Now for the important part - your VIN (Vehicle Identification Number).<br><br>
+                            <div class="vin-helper">🚗 Enter your 17-character VIN below, or click a sample VIN to test</div>
+                            </div>`);
                     } else {
-                        addBotMessage("Please provide a valid 10 or 11-digit phone number.");
+                        addBotMessage("Please enter a valid 10-digit phone number (like 555-123-4567)");
                     }
                     break;
                     
@@ -668,75 +758,11 @@
                     if (validateVIN(cleanedVIN)) {
                         state.userData.vin = cleanedVIN;
                         
-                        // Show loading spinner while decoding
-                        addBotMessage('<div style="display: flex; align-items: center; gap: 10px;">🔍 <div class="typing-indicator active loading-spinner"><span></span><span></span><span></span></div> Looking up your vehicle in the NHTSA database...</div>', false);
+                        // Show loading
+                        addBotMessage('<div style="display: flex; align-items: center; gap: 10px;">🔍 <div class="typing-indicator active loading-spinner"><span></span><span></span><span></span></div> Decoding your VIN with NHTSA database...</div>', false);
                         
-                        // Decode the VIN with real API
+                        // Decode VIN
                         decodeVIN(cleanedVIN).then(vehicleInfo => {
-                            // Remove the loading message
-                            const messages = chatContainer.querySelectorAll('.message');
-                            if (messages.length > 0) {
-                                const lastMessage = messages[messages.length - 1];
-                                if (lastMessage.innerHTML.includes('NHTSA database')) {
-                                    lastMessage.remove();
-                                }
-                            }
-                            
-                            if (vehicleInfo && vehicleInfo.year && vehicleInfo.make) {
-                                // Successfully decoded with API
-                                state.userData.vehicleInfo = vehicleInfo;
-                                state.currentStep = 'zip';
-                                
-                                // Build the vehicle description
-                                let vehicleDesc = `<strong>${vehicleInfo.year} ${vehicleInfo.make} ${vehicleInfo.model}`;
-                                if (vehicleInfo.trim) {
-                                    vehicleDesc += ` ${vehicleInfo.trim}`;
-                                }
-                                vehicleDesc += `</strong>`;
-                                
-                                let additionalInfo = '';
-                                if (vehicleInfo.bodyClass) {
-                                    additionalInfo += `<br>📋 Type: ${vehicleInfo.bodyClass}`;
-                                }
-                                if (vehicleInfo.engine) {
-                                    additionalInfo += `<br>🔧 Engine: ${vehicleInfo.engine}`;
-                                }
-                                if (vehicleInfo.driveType) {
-                                    additionalInfo += `<br>⚙️ Drive: ${vehicleInfo.driveType}`;
-                                }
-                                if (vehicleInfo.fuelType) {
-                                    additionalInfo += `<br>⛽ Fuel: ${vehicleInfo.fuelType}`;
-                                }
-                                
-                                addBotMessage(`<div>✅ Excellent! I've successfully decoded your VIN:<br><br>
-                                    ${vehicleDesc}
-                                    ${additionalInfo}
-                                    <br><span class="vin-status valid">✓ VIN Verified with NHTSA</span><br><br>
-                                    Now, what's your ZIP code? This helps us calculate the most accurate offer based on your location.</div>`, false);
-                            } else {
-                                // API failed or returned incomplete data - use fallback
-                                console.log('Using fallback vehicle data');
-                                const fallbackInfo = {
-                                    year: '2022',
-                                    make: 'Vehicle',
-                                    model: 'Model',
-                                    trim: '',
-                                    bodyClass: 'Sedan'
-                                };
-                                state.userData.vehicleInfo = fallbackInfo;
-                                state.currentStep = 'zip';
-                                
-                                addBotMessage(`<div>✅ VIN validated successfully!<br><br>
-                                    <strong>VIN: ${cleanedVIN}</strong><br>
-                                    <span class="vin-status valid">✓ VIN Format Valid</span><br><br>
-                                    Now, what's your ZIP code? This helps us calculate the most accurate offer based on your location.</div>`, false);
-                            }
-                            
-                            updateProgress();
-                            updateSuggestions();
-                        }).catch(error => {
-                            console.error('Error in VIN decode:', error);
-                            
                             // Remove loading message
                             const messages = chatContainer.querySelectorAll('.message');
                             if (messages.length > 0) {
@@ -746,7 +772,48 @@
                                 }
                             }
                             
-                            // Use fallback
+                            if (vehicleInfo && vehicleInfo.year && vehicleInfo.make) {
+                                state.userData.vehicleInfo = vehicleInfo;
+                                state.currentStep = 'zip';
+                                
+                                let vehicleDesc = `<strong>${vehicleInfo.year} ${vehicleInfo.make} ${vehicleInfo.model}`;
+                                if (vehicleInfo.trim) {
+                                    vehicleDesc += ` ${vehicleInfo.trim}`;
+                                }
+                                vehicleDesc += `</strong>`;
+                                
+                                addBotMessage(`<div>✅ Perfect! I found your vehicle:<br><br>
+                                    ${vehicleDesc}<br>
+                                    <span class="vin-status valid">✓ VIN Verified</span><br><br>
+                                    📍 What's your ZIP code? (For accurate local pricing)
+                                    </div>`, false);
+                            } else {
+                                // Fallback
+                                state.userData.vehicleInfo = {
+                                    year: '2022',
+                                    make: 'Vehicle',
+                                    model: 'Model',
+                                    trim: ''
+                                };
+                                state.currentStep = 'zip';
+                                
+                                addBotMessage(`<div>✅ VIN validated!<br>
+                                    <span class="vin-status valid">✓ VIN Accepted</span><br><br>
+                                    📍 What's your ZIP code?</div>`, false);
+                            }
+                            
+                            updateProgress();
+                            updateSuggestions();
+                        }).catch(error => {
+                            // Remove loading and use fallback
+                            const messages = chatContainer.querySelectorAll('.message');
+                            if (messages.length > 0) {
+                                const lastMessage = messages[messages.length - 1];
+                                if (lastMessage.innerHTML.includes('NHTSA database')) {
+                                    lastMessage.remove();
+                                }
+                            }
+                            
                             state.userData.vehicleInfo = {
                                 year: '2022',
                                 make: 'Vehicle',
@@ -755,21 +822,21 @@
                             };
                             state.currentStep = 'zip';
                             
-                            addBotMessage(`<div>✅ VIN validated!<br><br>
-                                <strong>VIN: ${cleanedVIN}</strong><br>
-                                <span class="vin-status valid">✓ VIN Accepted</span><br><br>
-                                Now, what's your ZIP code? This helps us calculate the most accurate offer based on your location.</div>`, false);
+                            addBotMessage(`<div>✅ VIN validated!<br>
+                                <span class="vin-status valid">✓ VIN: ${cleanedVIN}</span><br><br>
+                                📍 What's your ZIP code?</div>`, false);
                             
                             updateProgress();
                             updateSuggestions();
                         });
                         
-                        // Don't update progress here - wait for async to complete
                         return;
                     } else {
-                        addBotMessage(`<div>❌ That VIN doesn't appear to be valid. VINs are exactly 17 characters long and don't include the letters I, O, or Q.<br>
-                            <span class="vin-status invalid">✗ Invalid VIN Format</span><br>
-                            Please double-check and enter your VIN again.</div>`);
+                        addBotMessage(`<div>❌ That VIN isn't quite right. Remember:<br>
+                            • Must be exactly 17 characters<br>
+                            • No letters I, O, or Q<br>
+                            <span class="vin-status invalid">✗ Invalid VIN Format</span><br><br>
+                            Try again or click a sample VIN above to test</div>`);
                     }
                     break;
                     
@@ -777,9 +844,9 @@
                     if (validateZIP(input)) {
                         state.userData.zipCode = input;
                         state.currentStep = 'damages';
-                        addBotMessage("Almost done! Last question: Does your vehicle have any damage? Please describe any issues (mechanical, body damage, interior problems) or let me know if it's in excellent condition.");
+                        addBotMessage("Last question! 🔍 What's the condition of your vehicle? Be honest - it helps us give you the best offer.");
                     } else {
-                        addBotMessage("Please provide a valid 5-digit ZIP code.");
+                        addBotMessage("Please enter a valid 5-digit ZIP code (like 12345)");
                     }
                     break;
                     
@@ -790,7 +857,7 @@
                     break;
                     
                 case 'complete':
-                    addBotMessage("I've already generated your offer! If you'd like to start over with a different vehicle, please refresh the page.");
+                    addBotMessage("Your offer is ready above! 🎉 To get another offer for a different vehicle, please refresh the page.");
                     break;
             }
             
@@ -799,13 +866,13 @@
         }
 
         function generateOffer() {
-            const basePrice = 15000 + Math.random() * 25000;
+            const basePrice = 18000 + Math.random() * 27000;
             const damageDeduction = state.userData.damages.toLowerCase().includes('no damage') || 
                                    state.userData.damages.toLowerCase().includes('excellent') ? 0 : 
-                                   state.userData.damages.toLowerCase().includes('minor') ? 500 : 2000;
+                                   state.userData.damages.toLowerCase().includes('minor') ? 800 : 
+                                   state.userData.damages.toLowerCase().includes('mechanical') ? 3000 : 2500;
             const finalOffer = Math.round((basePrice - damageDeduction) / 100) * 100;
             
-            // Format vehicle description
             let vehicleDesc = state.userData.vehicleInfo.year + ' ' + 
                             state.userData.vehicleInfo.make + ' ' + 
                             state.userData.vehicleInfo.model;
@@ -813,25 +880,41 @@
                 vehicleDesc += ' ' + state.userData.vehicleInfo.trim;
             }
             
-            addBotMessage(`<div style="background: #f0f0f0; padding: 20px; border-radius: 8px; margin-top: 10px;">
-                <h3 style="color: #2c2c2c; margin-bottom: 15px;">🎉 Your Cash Offer is Ready!</h3>
-                <div style="font-size: 32px; font-weight: bold; color: #4CAF50; margin: 20px 0;">
-                    $${finalOffer.toLocaleString()}
+            addBotMessage(`<div class="offer-card">
+                <h3 style="color: #1e293b; margin-bottom: 8px; font-size: 18px;">🎉 Your Cash Offer is Ready!</h3>
+                <div class="offer-amount">$${finalOffer.toLocaleString()}</div>
+                
+                <div style="background: white; padding: 16px; border-radius: 12px; margin-top: 16px;">
+                    <div style="display: grid; gap: 8px; font-size: 14px;">
+                        <div><strong style="color: #64748b;">Vehicle:</strong> ${vehicleDesc}</div>
+                        <div><strong style="color: #64748b;">VIN:</strong> ${state.userData.vin}</div>
+                        <div><strong style="color: #64748b;">Location:</strong> ${state.userData.zipCode}</div>
+                        <div><strong style="color: #64748b;">Condition:</strong> ${state.userData.damages}</div>
+                    </div>
                 </div>
-                <div style="margin-top: 20px;">
-                    <strong>Vehicle:</strong> ${vehicleDesc}<br>
-                    <strong>VIN:</strong> ${state.userData.vin}<br>
-                    <strong>Location:</strong> ${state.userData.zipCode}<br>
-                    <strong>Contact:</strong> ${state.userData.email} | ${state.userData.phone}<br>
-                    <strong>Condition:</strong> ${state.userData.damages}
+                
+                <div style="margin-top: 20px; padding: 16px; background: #f0fdf4; border-radius: 12px;">
+                    <div style="font-size: 14px; color: #166534;">
+                        ✅ Offer valid for 7 days<br>
+                        ✅ Free vehicle pickup<br>
+                        ✅ Instant payment on pickup<br>
+                        ✅ No hidden fees
+                    </div>
                 </div>
-                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-                    <p style="font-size: 14px; color: #666;">✅ This offer is valid for 7 days<br>
-                    ✅ Free vehicle pickup included<br>
-                    ✅ Payment on the spot</p>
-                    <p style="font-size: 12px; color: #999; margin-top: 10px;">Reference ID: CO-${Date.now().toString().slice(-6)}</p>
+                
+                <div style="text-align: center; margin-top: 16px;">
+                    <div style="font-size: 13px; color: #94a3b8;">
+                        We'll send complete details to:<br>
+                        <strong>${state.userData.email}</strong>
+                    </div>
+                    <div style="font-size: 11px; color: #cbd5e1; margin-top: 8px;">
+                        Reference: CO-${Date.now().toString().slice(-6)}
+                    </div>
                 </div>
-            </div>`);
+            </div>`, false);
+            
+            // Hide suggestions after offer
+            suggestionsContainer.style.display = 'none';
         }
 
         function sendMessage() {
