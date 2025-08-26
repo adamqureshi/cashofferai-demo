@@ -373,10 +373,35 @@
         
         // VIN Submission
         async function submitVIN() {
-            const vin = document.getElementById('vinField').value;
-            if (vin.length !== 17) {
-                alert('Please enter a valid 17-character VIN');
-                return;
+    const vin = document.getElementById('vinField').value;
+    if (vin.length !== 17) {
+        alert('Please enter a valid 17-character VIN');
+        return;
+    }
+    
+    addMessage(vin, true);
+    addMessage('Decoding VIN...', false);
+    
+    try {
+        const response = await fetch(`${API_URL}/vehicle/decode`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ vin })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            vehicleData = data.vehicle;
+            vehicleData.baseValue = data.baseValue;
+            
+            addMessage(`Great! I found your ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}. 
+                ${vehicleData.bodyClass ? 'Body Type: ' + vehicleData.bodyClass + '.' : ''} 
+                ${vehicleData.fuelType ? 'Fuel: ' + vehicleData.fuelType + '.' : ''} 
+                Estimated base value: $${data.baseValue.toLocaleString()}. 
+                Now, let's assess the condition of your vehicle.`, false);
+            
+            moveToStep(2);
             }
             
             addMessage(vin, true);
