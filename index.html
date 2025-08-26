@@ -510,8 +510,28 @@
         }
         
         function calculateOffer(data) {
-            // Simplified offer calculation
-            let baseValue = 25000; // This would come from your VIN decoder/market data
+    // Use the base value from VIN decoder or default
+    let baseValue = data.baseValue || 25000;
+    
+    const conditionMultiplier = {
+        excellent: 1.0,
+        good: 0.9,
+        fair: 0.75,
+        poor: 0.5
+    };
+    
+    const historyMultiplier = {
+        none: 1.0,
+        minor: 0.85,
+        major: 0.6
+    };
+    
+    const offerAmount = baseValue * 
+                       conditionMultiplier[data.condition] * 
+                       historyMultiplier[data.accidentHistory];
+    
+    return Math.round(offerAmount);
+}
             
             const conditionMultiplier = {
                 excellent: 1.0,
