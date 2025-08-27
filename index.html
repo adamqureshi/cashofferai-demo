@@ -480,7 +480,7 @@
         <div class="chat-container" id="chatContainer">
             <div class="message ai">
                 <div class="message-bubble">
-                    👋 Welcome! I'm Cash Offer AI. I'll help you get an instant cash offer for your vehicle. Let's start with your VIN number.
+                    Hello. Let's get you a real cash offer.
                 </div>
             </div>
         </div>
@@ -653,7 +653,7 @@
             const submitBtn = document.getElementById('vinSubmitBtn');
             
             if (vin.length !== 17) {
-                alert('Please enter a valid 17-character VIN');
+                alert('Enter all 17 characters of your VIN. Check your dashboard or door frame.');
                 return;
             }
             
@@ -712,14 +712,14 @@
                     document.getElementById('conditionSection').style.display = 'block';
                     
                 } else {
-                    addMessage(`Sorry, I couldn't decode that VIN. ${data.error || 'Please check the VIN and try again.'}`);
+                    addMessage(`Can't decode that VIN. ${data.error || 'Double-check the characters and try again.'}`);
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = 'Submit VIN';
                 }
                 
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('Sorry, I had trouble processing that VIN. Please try again or I can connect you with a specialist.', false);
+                addMessage('Connection problem. Check your internet and try again.', false);
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Submit VIN';
                 checkForHandoff();
@@ -739,7 +739,7 @@
         
         async function submitCondition() {
             if (!selectedCondition) {
-                alert('Please select a condition');
+                alert('Select your vehicle condition to continue.');
                 return;
             }
             
@@ -757,7 +757,7 @@
         async function submitHistory() {
             const history = document.getElementById('accidentHistory').value;
             if (!history) {
-                alert('Please select accident history');
+                alert('Select accident history to continue.');
                 return;
             }
             
@@ -855,12 +855,12 @@
         // Generate Offer
         async function submitImages() {
             if (uploadedImages.length === 0) {
-                alert('Please upload at least one image');
+                alert('Add at least one photo to get your offer.');
                 return;
             }
             
-            addMessage(`${uploadedImages.length} images uploaded successfully!`, true);
-            addMessage('Analyzing your vehicle and generating your cash offer...', false);
+            addMessage(`${uploadedImages.length} photos added.`, true);
+            addMessage('Calculating your cash offer now.', false);
             
             // Simulate processing time
             setTimeout(() => {
