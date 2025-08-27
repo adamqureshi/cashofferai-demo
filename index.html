@@ -83,7 +83,7 @@
         }
         
         .chat-container {
-            height: 400ouzpx;
+            height: 400px;
             overflow-y: auto;
             border: 1px solid #e0e0e0;
             border-radius: 10px;
@@ -235,6 +235,20 @@
             border-radius: 10px;
             margin-top: 20px;
         }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -279,7 +293,7 @@
             <!-- VIN Input -->
             <div class="input-group" id="vinInput">
                 <input type="text" class="input-field" placeholder="Enter your 17-character VIN" maxlength="17" id="vinField">
-                <button class="btn" onclick="submitVIN()">Submit VIN</button>
+                <button class="btn" onclick="submitVIN()" id="vinSubmitBtn">Submit VIN</button>
             </div>
         </div>
         
@@ -287,19 +301,19 @@
         <div id="conditionSection" style="display: none;">
             <h3>Vehicle Condition</h3>
             <div class="condition-options">
-                <div class="condition-card" onclick="selectCondition('excellent')">
+                <div class="condition-card" onclick="selectCondition('excellent', event)">
                     <h4>Excellent</h4>
                     <p>Like new, no issues</p>
                 </div>
-                <div class="condition-card" onclick="selectCondition('good')">
+                <div class="condition-card" onclick="selectCondition('good', event)">
                     <h4>Good</h4>
                     <p>Minor wear, fully functional</p>
                 </div>
-                <div class="condition-card" onclick="selectCondition('fair')">
+                <div class="condition-card" onclick="selectCondition('fair', event)">
                     <h4>Fair</h4>
                     <p>Some issues, driveable</p>
                 </div>
-                <div class="condition-card" onclick="selectCondition('poor')">
+                <div class="condition-card" onclick="selectCondition('poor', event)">
                     <h4>Poor</h4>
                     <p>Major issues needed</p>
                 </div>
@@ -349,8 +363,9 @@
     </div>
     
     <script>
-        // Configuration
-        const API_URL = 'const API_URL = 'https://cashofferai-backend-m2fb5evk1-adamqureshis-projects.vercel.app/api';'; // Change this to your backend URL
+        // Configuration - UPDATE THIS WITH YOUR VERCEL BACKEND URL
+        const API_URL = 'https://cashofferai-backend.vercel.app/api';
+        
         let currentStep = 1;
         let vehicleData = {};
         let conversationId = generateId();
@@ -373,57 +388,79 @@
         
         // VIN Submission
         async function submitVIN() {
-    const vin = document.getElementById('vinField').value;
-    if (vin.length !== 17) {
-        alert('Please enter a valid 17-character VIN');
-        return;
-    }
-    
-    addMessage(vin, true);
-    addMessage('Decoding VIN...', false);
-    
-    try {
-        const response = await fetch(`${API_URL}/vehicle/decode`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ vin })
-        });
-        
-        const data = await response.json();
-        
-        if (data.success) {
-            vehicleData = data.vehicle;
-            vehicleData.baseValue = data.baseValue;
+            const vin = document.getElementById('vinField').value.toUpperCase();
+            const submitBtn = document.getElementById('vinSubmitBtn');
             
-            addMessage(`Great! I found your ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}. 
-                ${vehicleData.bodyClass ? 'Body Type: ' + vehicleData.bodyClass + '.' : ''} 
-                ${vehicleData.fuelType ? 'Fuel: ' + vehicleData.fuelType + '.' : ''} 
-                Estimated base value: $${data.baseValue.toLocaleString()}. 
-                Now, let's assess the condition of your vehicle.`, false);
-            
-            moveToStep(2);
+            if (vin.length !== 17) {
+                alert('Please enter a valid 17-character VIN');
+                return;
             }
             
             addMessage(vin, true);
             
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div> Decoding...';
+            
             try {
-                const response = await fetch(`${API_URL}/vehicle/decode-vin`, {
+                const response = await fetch(`${API_URL}/vehicle/decode`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ vin })
                 });
                 
                 const data = await response.json();
-                vehicleData = data.vehicleData;
                 
-                addMessage(`Great! I found your ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}. Now, let's assess the condition of your vehicle.`);
-                
-                moveToStep(2);
-                document.getElementById('vinInput').style.display = 'none';
-                document.getElementById('conditionSection').style.display = 'block';
+                if (data.success) {
+                    vehicleData = data.vehicle;
+                    vehicleData.baseValue = data.baseValue;
+                    vehicleData.marketValue = data.marketValue;
+                    
+                    // Build detailed message with available data
+                    let message = `Great! I found your ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}`;
+                    
+                    if (vehicleData.trim) {
+                        message += ` ${vehicleData.trim}`;
+                    }
+                    
+                    message += `.`;
+                    
+                    // Add additional details if available
+                    const details = [];
+                    if (vehicleData.bodyClass) details.push(`Body: ${vehicleData.bodyClass}`);
+                    if (vehicleData.transmission) details.push(`Transmission: ${vehicleData.transmission}`);
+                    if (vehicleData.fuelType) details.push(`Fuel: ${vehicleData.fuelType}`);
+                    if (vehicleData.driveType) details.push(`Drive: ${vehicleData.driveType}`);
+                    
+                    if (details.length > 0) {
+                        message += ` ${details.join(', ')}.`;
+                    }
+                    
+                    // Add value information
+                    if (vehicleData.marketValue) {
+                        message += ` Original MSRP: $${vehicleData.marketValue.toLocaleString()}.`;
+                    }
+                    message += ` Estimated value: $${vehicleData.baseValue.toLocaleString()}.`;
+                    
+                    message += ` Now, let's assess the condition of your vehicle.`;
+                    
+                    addMessage(message, false);
+                    
+                    moveToStep(2);
+                    document.getElementById('vinInput').style.display = 'none';
+                    document.getElementById('conditionSection').style.display = 'block';
+                    
+                } else {
+                    addMessage(`Sorry, I couldn't decode that VIN. ${data.error || 'Please check the VIN and try again.'}`);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Submit VIN';
+                }
                 
             } catch (error) {
-                addMessage('Sorry, I had trouble processing that VIN. Please try again or I can connect you with a specialist.');
+                console.error('Error:', error);
+                addMessage('Sorry, I had trouble processing that VIN. Please try again or I can connect you with a specialist.', false);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit VIN';
                 checkForHandoff();
             }
         }
@@ -431,7 +468,7 @@
         // Condition Selection
         let selectedCondition = null;
         
-        function selectCondition(condition) {
+        function selectCondition(condition, event) {
             selectedCondition = condition;
             document.querySelectorAll('.condition-card').forEach(card => {
                 card.classList.remove('selected');
@@ -448,7 +485,7 @@
             addMessage(`Condition: ${selectedCondition}`, true);
             vehicleData.condition = selectedCondition;
             
-            addMessage('Thanks! Now I need to know about any accident history.');
+            addMessage('Thanks! Now I need to know about any accident history.', false);
             
             moveToStep(3);
             document.getElementById('conditionSection').style.display = 'none';
@@ -466,7 +503,7 @@
             addMessage(`Accident history: ${history}`, true);
             vehicleData.accidentHistory = history;
             
-            addMessage('Perfect! Finally, please upload some photos of your vehicle so I can finalize your offer.');
+            addMessage('Perfect! Finally, please upload some photos of your vehicle so I can finalize your offer.', false);
             
             moveToStep(4);
             document.getElementById('historySection').style.display = 'none';
@@ -500,9 +537,9 @@
             }
             
             addMessage('Images uploaded successfully!', true);
-            addMessage('Analyzing your vehicle and generating your cash offer...');
+            addMessage('Analyzing your vehicle and generating your cash offer...', false);
             
-            // Simulate API call
+            // Simulate processing time
             setTimeout(() => {
                 const offer = calculateOffer(vehicleData);
                 displayOffer(offer);
@@ -510,28 +547,8 @@
         }
         
         function calculateOffer(data) {
-    // Use the base value from VIN decoder or default
-    let baseValue = data.baseValue || 25000;
-    
-    const conditionMultiplier = {
-        excellent: 1.0,
-        good: 0.9,
-        fair: 0.75,
-        poor: 0.5
-    };
-    
-    const historyMultiplier = {
-        none: 1.0,
-        minor: 0.85,
-        major: 0.6
-    };
-    
-    const offerAmount = baseValue * 
-                       conditionMultiplier[data.condition] * 
-                       historyMultiplier[data.accidentHistory];
-    
-    return Math.round(offerAmount);
-}
+            // Use the base value from carAPI
+            let baseValue = data.baseValue || 25000;
             
             const conditionMultiplier = {
                 excellent: 1.0,
@@ -559,7 +576,7 @@
             document.getElementById('offerSection').style.display = 'block';
             document.getElementById('offerAmount').textContent = `$${amount.toLocaleString()}`;
             
-            addMessage(`🎉 Your cash offer is ready: $${amount.toLocaleString()}! This offer is valid for 7 days.`);
+            addMessage(`🎉 Your cash offer is ready: $${amount.toLocaleString()}! This offer is valid for 7 days.`, false);
         }
         
         // Step Management
@@ -580,17 +597,25 @@
         // Handoff Detection
         async function checkForHandoff() {
             // This would check with your backend
-            const needsHandoff = true; // Simplified
+            const needsHandoff = true; // Simplified for now
             
             if (needsHandoff) {
                 document.getElementById('handoffSection').style.display = 'block';
                 
-                // Notify backend to create handoff ticket
-                await fetch(`${API_URL}/handoff/create`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ conversationId })
-                });
+                // Notify backend to create handoff ticket (when implemented)
+                try {
+                    await fetch(`${API_URL}/handoff/create`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            conversationId,
+                            vehicleData,
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                } catch (error) {
+                    console.log('Handoff endpoint not yet implemented');
+                }
             }
         }
         
