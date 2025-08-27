@@ -15,24 +15,46 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+            margin: 0;
         }
         
         .container {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 90%;
-            padding: 40px;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+            
+            .container {
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                max-width: 800px;
+                min-height: auto;
+                padding: 40px;
+            }
+        }
+        
+        h1 {
+            font-size: 28px;
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
         }
         
         .step-indicator {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            padding: 0 10px;
         }
         
         .step {
@@ -67,6 +89,7 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            font-size: 14px;
         }
         
         .step.active .step-circle {
@@ -78,18 +101,31 @@
         }
         
         .step-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
+            display: none;
+        }
+        
+        @media (min-width: 480px) {
+            .step-label {
+                display: block;
+            }
         }
         
         .chat-container {
-            height: 400px;
+            height: 300px;
             overflow-y: auto;
             border: 1px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 15px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
             background: #f9f9f9;
+        }
+        
+        @media (min-width: 768px) {
+            .chat-container {
+                height: 400px;
+            }
         }
         
         .message {
@@ -103,10 +139,11 @@
         }
         
         .message-bubble {
-            max-width: 70%;
+            max-width: 80%;
             padding: 12px 16px;
             border-radius: 18px;
             line-height: 1.4;
+            font-size: 16px;
         }
         
         .message.ai .message-bubble {
@@ -120,39 +157,53 @@
             color: white;
         }
         
+        /* Mobile-first input styles */
         .input-group {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 20px;
         }
         
         .input-field {
-            flex: 1;
-            padding: 12px;
+            width: 100%;
+            padding: 18px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 18px;
             transition: border-color 0.3s;
+            -webkit-appearance: none;
+            appearance: none;
         }
         
         .input-field:focus {
             outline: none;
             border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
         .btn {
-            padding: 12px 24px;
+            padding: 18px 32px;
             background: #667eea;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .btn:hover {
             background: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
         }
         
         .btn:disabled {
@@ -160,24 +211,51 @@
             cursor: not-allowed;
         }
         
+        @media (min-width: 768px) {
+            .input-group {
+                flex-direction: row;
+            }
+            
+            .input-field {
+                flex: 1;
+            }
+            
+            .btn {
+                width: auto;
+                padding: 18px 32px;
+            }
+        }
+        
+        /* Condition cards - mobile optimized */
         .condition-options {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 15px;
-            margin: 20px 0;
+            margin: 30px 0;
+        }
+        
+        @media (min-width: 480px) {
+            .condition-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         .condition-card {
-            padding: 15px;
+            padding: 20px;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.3s;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .condition-card:hover {
             border-color: #667eea;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .condition-card.selected {
@@ -185,31 +263,110 @@
             border-color: #667eea;
         }
         
+        .condition-card h4 {
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        
+        .condition-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        /* Image upload - mobile optimized */
         .image-upload {
             border: 2px dashed #667eea;
-            border-radius: 10px;
-            padding: 40px;
+            border-radius: 12px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.3s;
+            background: #f8f9ff;
+            position: relative;
         }
         
         .image-upload:hover {
             background: #f0f4ff;
+            border-color: #5a67d8;
+        }
+        
+        .image-upload.dragover {
+            background: #e8edff;
+            border-color: #4c5dd8;
+        }
+        
+        .image-upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .image-upload p {
+            margin: 5px 0;
+        }
+        
+        .image-upload .main-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .image-upload .sub-text {
+            font-size: 14px;
+            color: #666;
         }
         
         .image-preview {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin-top: 20px;
+        }
+        
+        @media (min-width: 480px) {
+            .image-preview {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .image-preview {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+        
+        .image-preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
         }
         
         .image-preview img {
             width: 100%;
             height: 100px;
             object-fit: cover;
-            border-radius: 5px;
+            border-radius: 8px;
+        }
+        
+        .image-remove {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .image-remove:hover {
+            background: #ff4444;
+            color: white;
         }
         
         .offer-display {
@@ -227,13 +384,20 @@
             margin: 20px 0;
         }
         
+        @media (min-width: 768px) {
+            .offer-amount {
+                font-size: 56px;
+            }
+        }
+        
         .handoff-notice {
             background: #fff3cd;
             border: 1px solid #ffc107;
             color: #856404;
-            padding: 15px;
-            border-radius: 10px;
+            padding: 20px;
+            border-radius: 12px;
             margin-top: 20px;
+            font-size: 16px;
         }
 
         .loading {
@@ -290,11 +454,23 @@
         
         <!-- Dynamic Input Area -->
         <div id="dynamicInputArea">
-            <!-- VIN Input -->
+            <!-- VIN Input - Mobile Optimized -->
             <div class="input-group" id="vinInput">
-                <input type="text" class="input-field" placeholder="Enter your 17-character VIN" maxlength="17" id="vinField">
+                <input type="text" 
+                       class="input-field" 
+                       placeholder="Enter 17-character VIN" 
+                       maxlength="17" 
+                       id="vinField"
+                       autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="characters"
+                       pattern="[A-HJ-NPR-Z0-9]{17}"
+                       inputmode="text">
                 <button class="btn" onclick="submitVIN()" id="vinSubmitBtn">Submit VIN</button>
             </div>
+            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 10px;">
+                Example: 5YJSA1DN5DFP14705
+            </p>
         </div>
         
         <!-- Hidden sections to be shown progressively -->
@@ -335,14 +511,16 @@
         </div>
         
         <div id="imageSection" style="display: none;">
-            <h3>Upload Vehicle Images</h3>
-            <div class="image-upload" onclick="document.getElementById('imageInput').click()">
-                <p>📷 Click to upload images</p>
-                <p style="font-size: 12px; color: #666;">Upload front, back, sides, and interior</p>
+            <h3 style="margin-bottom: 20px;">Upload Vehicle Images</h3>
+            <div class="image-upload" id="imageUploadArea">
+                <div class="image-upload-icon">📸</div>
+                <p class="main-text">Add Photos</p>
+                <p class="sub-text">Tap to select or drag & drop</p>
+                <p class="sub-text" style="font-size: 12px;">Add multiple photos for better valuation</p>
             </div>
-            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
             <div class="image-preview" id="imagePreview"></div>
-            <button class="btn" onclick="submitImages()" style="margin-top: 20px;">Generate Offer</button>
+            <button class="btn" onclick="submitImages()" style="margin-top: 30px;">Generate Offer</button>
         </div>
         
         <div id="offerSection" style="display: none;">
@@ -355,47 +533,49 @@
         </div>
         
         <div id="acceptedSection" style="display: none;">
-            <div style="background: #f0fff4; border: 2px solid #4caf50; border-radius: 15px; padding: 30px; margin-top: 20px;">
-                <h2 style="color: #4caf50; text-align: center;">✓ Offer Accepted!</h2>
-                <p style="text-align: center; font-size: 18px; margin: 20px 0;">Thank you for accepting our offer of <strong id="acceptedAmount">$--,---</strong></p>
+            <div style="background: #f0fff4; border: 2px solid #4caf50; border-radius: 15px; padding: 20px; margin-top: 20px;">
+                <h2 style="color: #4caf50; text-align: center; font-size: 24px;">✓ Offer Accepted!</h2>
+                <p style="text-align: center; font-size: 16px; margin: 15px 0;">Thank you for accepting our offer of <strong id="acceptedAmount" style="font-size: 20px;">$--,---</strong></p>
                 
-                <div style="background: white; border-radius: 10px; padding: 25px; margin-top: 20px;">
-                    <h3 style="color: #333; margin-bottom: 20px;">What Happens Next:</h3>
+                <div style="background: white; border-radius: 10px; padding: 20px; margin-top: 20px;">
+                    <h3 style="color: #333; margin-bottom: 20px; font-size: 20px;">What Happens Next:</h3>
                     
                     <div style="margin-bottom: 20px;">
-                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">1</div>
+                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">1</div>
                             <div>
-                                <strong>Dealer Contact (Within 24 Hours)</strong>
-                                <p style="color: #666; margin-top: 5px;">A buying specialist from our dealer network will contact you to schedule your preferred appointment method.</p>
+                                <strong style="font-size: 16px;">Dealer Contact (Within 24 Hours)</strong>
+                                <p style="color: #666; margin-top: 5px; font-size: 14px;">A buying specialist from our dealer network will contact you to schedule your preferred appointment method.</p>
                             </div>
                         </div>
                         
-                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">2</div>
+                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">2</div>
                             <div>
-                                <strong>Choose Your Appointment Type</strong>
-                                <p style="color: #666; margin-top: 5px;">• <strong>In-Person Inspection:</strong> Schedule a time for the dealer to inspect your vehicle at your location or theirs<br>
-                                • <strong>Virtual Walkthrough:</strong> Complete a Zoom call to review the vehicle condition and paperwork remotely</p>
+                                <strong style="font-size: 16px;">Choose Your Appointment Type</strong>
+                                <p style="color: #666; margin-top: 5px; font-size: 14px;">
+                                    <strong>In-Person:</strong> Vehicle inspection at your location<br>
+                                    <strong>Virtual:</strong> Zoom walkthrough for paperwork
+                                </p>
                             </div>
                         </div>
                         
-                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">3</div>
+                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">3</div>
                             <div>
-                                <strong>Complete the Sale</strong>
-                                <p style="color: #666; margin-top: 5px;">After verification, we'll handle all paperwork, arrange payment, and schedule vehicle pickup at your convenience.</p>
+                                <strong style="font-size: 16px;">Complete the Sale</strong>
+                                <p style="color: #666; margin-top: 5px; font-size: 14px;">We handle all paperwork, payment, and vehicle pickup.</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-top: 20px;">
-                        <p style="margin: 0;"><strong>💡 Tip:</strong> Have your vehicle title and registration ready for a smoother process.</p>
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
+                        <p style="margin: 0; font-size: 14px;"><strong>💡 Tip:</strong> Have your vehicle title and registration ready.</p>
                     </div>
                     
                     <div style="text-align: center; margin-top: 25px;">
-                        <p style="color: #666;">Questions? Call us at</p>
-                        <p style="font-size: 24px; color: #667eea; font-weight: bold; margin: 10px 0;">1-800-CASH-NOW</p>
+                        <p style="color: #666; font-size: 14px;">Questions? Call us at</p>
+                        <p style="font-size: 22px; color: #667eea; font-weight: bold; margin: 10px 0;">1-800-CASH-NOW</p>
                         <p style="color: #999; font-size: 12px;">Reference ID: <span id="referenceId">CO-2025-</span></p>
                     </div>
                 </div>
@@ -558,22 +738,84 @@
             document.getElementById('imageSection').style.display = 'block';
         }
         
-        // Image Upload
+        // Image Upload with drag & drop
         let uploadedImages = [];
         
-        function handleImageUpload(event) {
-            const files = event.target.files;
+        // Click to upload
+        const uploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('imageInput');
+        
+        if (uploadArea) {
+            uploadArea.addEventListener('click', () => {
+                imageInput.click();
+            });
+            
+            // Drag and drop for desktop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+        }
+        
+        // File input change
+        if (imageInput) {
+            imageInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+        
+        function handleFiles(files) {
             const preview = document.getElementById('imagePreview');
             
             for (let file of files) {
+                if (!file.type.startsWith('image/')) continue;
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    const imageId = 'img_' + Math.random().toString(36).substr(2, 9);
+                    
+                    const imageContainer = document.createElement('div');
+                    imageContainer.className = 'image-preview-item';
+                    imageContainer.id = imageId;
+                    
                     const img = document.createElement('img');
                     img.src = e.target.result;
-                    preview.appendChild(img);
-                    uploadedImages.push(e.target.result);
+                    
+                    const removeBtn = document.createElement('div');
+                    removeBtn.className = 'image-remove';
+                    removeBtn.innerHTML = '×';
+                    removeBtn.onclick = () => removeImage(imageId);
+                    
+                    imageContainer.appendChild(img);
+                    imageContainer.appendChild(removeBtn);
+                    preview.appendChild(imageContainer);
+                    
+                    uploadedImages.push({
+                        id: imageId,
+                        data: e.target.result
+                    });
                 };
                 reader.readAsDataURL(file);
+            }
+        }
+        
+        function removeImage(imageId) {
+            const element = document.getElementById(imageId);
+            if (element) {
+                element.remove();
+                uploadedImages = uploadedImages.filter(img => img.id !== imageId);
             }
         }
         
@@ -584,7 +826,7 @@
                 return;
             }
             
-            addMessage('Images uploaded successfully!', true);
+            addMessage(`${uploadedImages.length} images uploaded successfully!`, true);
             addMessage('Analyzing your vehicle and generating your cash offer...', false);
             
             // Simulate processing time
