@@ -350,7 +350,55 @@
                 <h2>Your Cash Offer</h2>
                 <div class="offer-amount" id="offerAmount">$--,---</div>
                 <p>Valid for 7 days</p>
-                <button class="btn" style="background: white; color: #667eea; margin-top: 20px;">Accept Offer</button>
+                <button class="btn" onclick="acceptOffer()" style="background: white; color: #667eea; margin-top: 20px;">Accept Offer</button>
+            </div>
+        </div>
+        
+        <div id="acceptedSection" style="display: none;">
+            <div style="background: #f0fff4; border: 2px solid #4caf50; border-radius: 15px; padding: 30px; margin-top: 20px;">
+                <h2 style="color: #4caf50; text-align: center;">✓ Offer Accepted!</h2>
+                <p style="text-align: center; font-size: 18px; margin: 20px 0;">Thank you for accepting our offer of <strong id="acceptedAmount">$--,---</strong></p>
+                
+                <div style="background: white; border-radius: 10px; padding: 25px; margin-top: 20px;">
+                    <h3 style="color: #333; margin-bottom: 20px;">What Happens Next:</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">1</div>
+                            <div>
+                                <strong>Dealer Contact (Within 24 Hours)</strong>
+                                <p style="color: #666; margin-top: 5px;">A buying specialist from our dealer network will contact you to schedule your preferred appointment method.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">2</div>
+                            <div>
+                                <strong>Choose Your Appointment Type</strong>
+                                <p style="color: #666; margin-top: 5px;">• <strong>In-Person Inspection:</strong> Schedule a time for the dealer to inspect your vehicle at your location or theirs<br>
+                                • <strong>Virtual Walkthrough:</strong> Complete a Zoom call to review the vehicle condition and paperwork remotely</p>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: start; margin-bottom: 15px;">
+                            <div style="background: #667eea; color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0;">3</div>
+                            <div>
+                                <strong>Complete the Sale</strong>
+                                <p style="color: #666; margin-top: 5px;">After verification, we'll handle all paperwork, arrange payment, and schedule vehicle pickup at your convenience.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px; margin-top: 20px;">
+                        <p style="margin: 0;"><strong>💡 Tip:</strong> Have your vehicle title and registration ready for a smoother process.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <p style="color: #666;">Questions? Call us at</p>
+                        <p style="font-size: 24px; color: #667eea; font-weight: bold; margin: 10px 0;">1-800-CASH-NOW</p>
+                        <p style="color: #999; font-size: 12px;">Reference ID: <span id="referenceId">CO-2025-</span></p>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -616,6 +664,52 @@
                 } catch (error) {
                     console.log('Handoff endpoint not yet implemented');
                 }
+            }
+        }
+        
+        // Accept Offer function
+        function acceptOffer() {
+            const offerAmount = document.getElementById('offerAmount').textContent;
+            
+            // Generate a reference ID
+            const refId = 'CO-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            // Hide offer section, show accepted section
+            document.getElementById('offerSection').style.display = 'none';
+            document.getElementById('acceptedSection').style.display = 'block';
+            document.getElementById('acceptedAmount').textContent = offerAmount;
+            document.getElementById('referenceId').textContent = refId;
+            
+            // Add to chat
+            addMessage('I accept the offer!', true);
+            addMessage(`Congratulations! Your offer of ${offerAmount} has been accepted. A dealer specialist will contact you within 24 hours to arrange your inspection or virtual appointment. Your reference ID is ${refId}.`, false);
+            
+            // Scroll to show the acceptance confirmation
+            document.getElementById('acceptedSection').scrollIntoView({ behavior: 'smooth' });
+            
+            // In a real app, this would send data to your backend
+            sendAcceptanceToBackend(offerAmount, refId);
+        }
+        
+        // Send acceptance data to backend (for demo purposes)
+        async function sendAcceptanceToBackend(amount, referenceId) {
+            try {
+                // This would be your actual backend endpoint
+                const response = await fetch(`${API_URL}/offer/accept`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        conversationId,
+                        vehicleData,
+                        offerAmount: amount,
+                        referenceId: referenceId,
+                        acceptedAt: new Date().toISOString()
+                    })
+                });
+                console.log('Offer acceptance recorded');
+            } catch (error) {
+                // For demo, this is okay to fail since endpoint doesn't exist yet
+                console.log('Backend endpoint not implemented yet');
             }
         }
         
