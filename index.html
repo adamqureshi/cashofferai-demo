@@ -165,6 +165,52 @@
             margin-bottom: 15px;
             display: flex;
             align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+        
+        .message.collapsed {
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+        
+        .message.collapsed .message-bubble {
+            max-height: 50px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid transparent;
+        }
+        
+        .message.collapsed .message-bubble:hover {
+            border-color: #e0e0e0;
+        }
+        
+        .message.collapsed .message-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, white);
+            pointer-events: none;
+        }
+        
+        .message.collapsed.ai .message-bubble::after {
+            background: linear-gradient(to bottom, transparent, white);
+        }
+        
+        .message.collapsed.user .message-bubble::after {
+            background: linear-gradient(to bottom, transparent, #667eea);
+        }
+        
+        .message.collapsed .message-bubble::before {
+            content: '⋯';
+            position: absolute;
+            bottom: 2px;
+            right: 10px;
+            font-size: 20px;
+            color: #999;
+            z-index: 1;
         }
         
         .message.user {
@@ -177,6 +223,8 @@
             border-radius: 18px;
             line-height: 1.4;
             font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .message.ai .message-bubble {
@@ -635,16 +683,40 @@
             return 'conv_' + Math.random().toString(36).substr(2, 9);
         }
         
-        // Add message to chat
+        // Add message to chat with collapse functionality
         function addMessage(content, isUser = false) {
             const chatContainer = document.getElementById('chatContainer');
+            
+            // Collapse all previous messages
+            const existingMessages = chatContainer.querySelectorAll('.message');
+            existingMessages.forEach(msg => {
+                msg.classList.add('collapsed');
+            });
+            
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
             messageDiv.innerHTML = `
                 <div class="message-bubble">${content}</div>
             `;
+            
+            // Add click to expand collapsed messages
+            messageDiv.querySelector('.message-bubble').addEventListener('click', function() {
+                if (messageDiv.classList.contains('collapsed')) {
+                    // Collapse all messages first
+                    chatContainer.querySelectorAll('.message').forEach(msg => {
+                        msg.classList.add('collapsed');
+                    });
+                    // Then expand the clicked one
+                    messageDiv.classList.remove('collapsed');
+                }
+            });
+            
             chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Smooth scroll to the new message
+            setTimeout(() => {
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }, 100);
         }
         
         // VIN Submission
