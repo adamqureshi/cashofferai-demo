@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cash Offer AI - Vehicle Valuation</title>
+    <title>Cash Offer AI - Sell Your Car Fast</title>
     <style>
         * {
             margin: 0;
@@ -37,224 +37,182 @@
             .container {
                 border-radius: 20px;
                 box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-                max-width: 800px;
+                max-width: 900px;
                 min-height: auto;
                 padding: 40px;
             }
         }
         
-        h1 {
-            font-size: 28px;
+        .header {
             text-align: center;
-            color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
-        .step-indicator {
+        h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        /* Progress Indicator */
+        .progress-bar {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 30px;
-            padding: 0 10px;
-        }
-        
-        .step {
-            flex: 1;
-            text-align: center;
+            margin-bottom: 40px;
+            padding: 0;
             position: relative;
         }
         
-        .step::after {
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .progress-step::before {
             content: '';
             position: absolute;
-            top: 15px;
+            top: 20px;
+            left: 50%;
             right: -50%;
             width: 100%;
-            height: 2px;
+            height: 3px;
             background: #e0e0e0;
             z-index: -1;
         }
         
-        .step:last-child::after {
+        .progress-step:last-child::before {
             display: none;
         }
         
-        .step-circle {
-            width: 30px;
-            height: 30px;
+        .progress-step.active ~ .progress-step::before,
+        .progress-step.completed::before {
+            background: #4caf50;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: #e0e0e0;
-            margin: 0 auto 10px;
+            margin: 0 auto 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 16px;
             transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
         }
         
-        /* Focus ring for keyboard navigation */
-        .step-circle:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4);
-        }
-        
-        .step-circle:focus-visible {
-            outline: 3px solid #667eea;
-            outline-offset: 3px;
-        }
-        
-        .step.active .step-circle {
+        .progress-step.active .step-number {
             background: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 8px rgba(102, 126, 234, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-            }
-        }
-        
-        .step.completed .step-circle {
-            background: #4caf50;
-        }
-        
-        .step.completed .step-circle:hover {
-            background: #45a049;
             transform: scale(1.1);
         }
         
+        .progress-step.completed .step-number {
+            background: #4caf50;
+        }
+        
         .step-label {
-            font-size: 11px;
+            font-size: 12px;
             color: #666;
-            display: none;
+            font-weight: 500;
         }
         
-        @media (min-width: 480px) {
+        @media (max-width: 640px) {
             .step-label {
-                display: block;
+                display: none;
             }
         }
         
-        .chat-container {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #e0e0e0;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            background: #f9f9f9;
-        }
-        
-        @media (min-width: 768px) {
-            .chat-container {
-                height: 400px;
-            }
-        }
-        
-        .message {
-            margin-bottom: 15px;
+        /* Intent Toggle */
+        .intent-toggle {
             display: flex;
-            align-items: flex-start;
-            transition: all 0.3s ease;
+            background: #f5f5f5;
+            border-radius: 12px;
+            padding: 4px;
+            margin: 30px auto;
+            max-width: 400px;
         }
         
-        .message.collapsed {
-            opacity: 0.6;
-            transform: scale(0.95);
-        }
-        
-        .message.collapsed .message-bubble {
-            max-height: 50px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid transparent;
-        }
-        
-        .message.collapsed .message-bubble:hover {
-            border-color: #e0e0e0;
-        }
-        
-        .message.collapsed .message-bubble::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 20px;
-            background: linear-gradient(to bottom, transparent, white);
-            pointer-events: none;
-        }
-        
-        .message.collapsed.ai .message-bubble::after {
-            background: linear-gradient(to bottom, transparent, white);
-        }
-        
-        .message.collapsed.user .message-bubble::after {
-            background: linear-gradient(to bottom, transparent, #667eea);
-        }
-        
-        .message.collapsed .message-bubble::before {
-            content: '⋯';
-            position: absolute;
-            bottom: 2px;
-            right: 10px;
-            font-size: 20px;
-            color: #999;
-            z-index: 1;
-        }
-        
-        .message.user {
-            justify-content: flex-end;
-        }
-        
-        .message-bubble {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            line-height: 1.4;
-            font-size: 16px;
+        .intent-option {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
         }
         
-        .message.ai .message-bubble {
+        .intent-option.selected {
             background: white;
-            color: #333;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .message.user .message-bubble {
-            background: #667eea;
-            color: white;
+        /* Form Sections */
+        .form-section {
+            display: none;
+            animation: fadeIn 0.3s;
         }
         
-        /* Mobile-first input styles */
-        .input-group {
+        .form-section.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .form-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .required {
+            color: #e74c3c;
         }
         
         .input-field {
-            width: 100%;
-            padding: 18px;
+            padding: 14px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 18px;
-            transition: border-color 0.3s;
-            -webkit-appearance: none;
-            appearance: none;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
         }
         
         .input-field:focus {
@@ -263,18 +221,410 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
+        select.input-field {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 24px;
+            padding-right: 40px;
+        }
+        
+        /* Condition Questions */
+        .condition-grid {
+            display: grid;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .condition-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .condition-item:hover {
+            border-color: #667eea;
+            background: #f5f7ff;
+        }
+        
+        .condition-question {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .condition-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .condition-btn {
+            padding: 10px 24px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .condition-btn:hover {
+            border-color: #667eea;
+        }
+        
+        .condition-btn.selected-yes {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .condition-btn.selected-no {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        /* Photo Upload */
+        .photo-upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9ff;
+            margin: 20px 0;
+        }
+        
+        .photo-upload-area:hover {
+            background: #f0f4ff;
+            border-color: #5a67d8;
+        }
+        
+        .photo-upload-area.dragover {
+            background: #e8edff;
+            border-color: #4c5dd8;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .photo-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f5f5f5;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .photo-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 20px;
+            color: #666;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .photo-remove:hover {
+            background: #ff4444;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        /* Offer Display */
+        .offer-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+        }
+        
+        .offer-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .offer-amount {
+            font-size: 56px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .confidence-band {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .offer-validity {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        
+        .offer-why {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .offer-why h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .offer-why ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .offer-why li {
+            padding: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+        
+        .offer-why li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .offer-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        
+        .offer-btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .offer-btn.primary {
+            background: white;
+            color: #667eea;
+        }
+        
+        .offer-btn.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .offer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Document Upload */
+        .doc-upload-grid {
+            display: grid;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .doc-upload-item {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .doc-upload-item.uploaded {
+            border-color: #4caf50;
+            background: #f0fff4;
+        }
+        
+        .doc-upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .doc-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .doc-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .doc-status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .doc-status.uploaded {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .doc-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .doc-upload-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .doc-upload-btn:hover {
+            background: #5a67d8;
+        }
+        
+        /* Schedule Section */
+        .schedule-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 640px) {
+            .schedule-options {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .schedule-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        
+        .schedule-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .schedule-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .schedule-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .schedule-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .schedule-desc {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .time-slot {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .time-slot:hover {
+            border-color: #667eea;
+        }
+        
+        .time-slot.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        /* Buttons */
         .btn {
-            padding: 18px 32px;
+            padding: 16px 32px;
             background: #667eea;
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
-            -webkit-tap-highlight-color: transparent;
+            margin-top: 20px;
         }
         
         .btn:hover {
@@ -283,204 +633,65 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
         
-        .btn:active {
-            transform: translateY(0);
-        }
-        
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+            transform: none;
         }
         
-        @media (min-width: 768px) {
-            .input-group {
-                flex-direction: row;
-            }
-            
-            .input-field {
-                flex: 1;
-            }
-            
-            .btn {
-                width: auto;
-                padding: 18px 32px;
-            }
+        .btn-secondary {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
         }
         
-        /* Condition cards - mobile optimized */
-        .condition-options {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* Success State */
+        .success-card {
+            background: #f0fff4;
+            border: 2px solid #4caf50;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
             margin: 30px 0;
         }
         
-        @media (min-width: 480px) {
-            .condition-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .success-icon {
+            font-size: 64px;
+            color: #4caf50;
+            margin-bottom: 20px;
         }
         
-        .condition-card {
-            padding: 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            min-height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .condition-card:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .condition-card.selected {
-            background: #f0f4ff;
-            border-color: #667eea;
-        }
-        
-        .condition-card h4 {
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-        
-        .condition-card p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        /* Image upload - mobile optimized */
-        .image-upload {
-            border: 2px dashed #667eea;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #f8f9ff;
-            position: relative;
-        }
-        
-        .image-upload:hover {
-            background: #f0f4ff;
-            border-color: #5a67d8;
-        }
-        
-        .image-upload.dragover {
-            background: #e8edff;
-            border-color: #4c5dd8;
-        }
-        
-        .image-upload-icon {
-            font-size: 48px;
+        .success-title {
+            font-size: 28px;
+            color: #333;
             margin-bottom: 10px;
         }
         
-        .image-upload p {
-            margin: 5px 0;
+        .success-message {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
         }
         
-        .image-upload .main-text {
-            font-size: 18px;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        .image-upload .sub-text {
+        /* Helper Text */
+        .helper-text {
             font-size: 14px;
             color: #666;
+            margin-top: 8px;
         }
         
-        .image-preview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+        .error-text {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 8px;
         }
         
-        @media (min-width: 480px) {
-            .image-preview {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .image-preview {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-        
-        .image-preview-item {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .image-preview img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .image-remove {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 18px;
-            color: #666;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        
-        .image-remove:hover {
-            background: #ff4444;
-            color: white;
-        }
-        
-        .offer-display {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .offer-amount {
-            font-size: 48px;
-            font-weight: bold;
-            margin: 20px 0;
-        }
-        
-        @media (min-width: 768px) {
-            .offer-amount {
-                font-size: 56px;
-            }
-        }
-        
-        .handoff-notice {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #856404;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-
+        /* Loading State */
         .loading {
             display: inline-block;
             width: 20px;
@@ -490,648 +701,869 @@
             border-top-color: #667eea;
             animation: spin 1s ease-in-out infinite;
         }
-
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .loading-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="text-align: center; color: #333; margin-bottom: 30px;">Cash Offer AI</h1>
+        <div class="header">
+            <h1>Cash Offer AI</h1>
+            <p class="tagline">Real offer in 2 minutes • No showroom visit</p>
+        </div>
         
-        <!-- Step Indicator -->
-        <div class="step-indicator">
-            <div class="step active" id="step1">
-                <div class="step-circle" tabindex="0" role="button" aria-label="Step 1: VIN">1</div>
-                <div class="step-label">VIN</div>
-            </div>
-            <div class="step" id="step2">
-                <div class="step-circle" tabindex="0" role="button" aria-label="Step 2: Condition">2</div>
-                <div class="step-label">Condition</div>
-            </div>
-            <div class="step" id="step3">
-                <div class="step-circle" tabindex="0" role="button" aria-label="Step 3: History">3</div>
-                <div class="step-label">History</div>
-            </div>
-            <div class="step" id="step4">
-                <div class="step-circle" tabindex="0" role="button" aria-label="Step 4: Images">4</div>
-                <div class="step-label">Images</div>
-            </div>
-            <div class="step" id="step5">
-                <div class="step-circle" tabindex="0" role="button" aria-label="Step 5: Offer">5</div>
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active" id="step-offer">
+                <div class="step-number">1</div>
                 <div class="step-label">Offer</div>
             </div>
+            <div class="progress-step" id="step-docs">
+                <div class="step-number">2</div>
+                <div class="step-label">Docs</div>
+            </div>
+            <div class="progress-step" id="step-schedule">
+                <div class="step-number">3</div>
+                <div class="step-label">Schedule</div>
+            </div>
+            <div class="progress-step" id="step-money">
+                <div class="step-number">4</div>
+                <div class="step-label">Money</div>
+            </div>
         </div>
         
-        <!-- Chat Container -->
-        <div class="chat-container" id="chatContainer">
-            <div class="message ai">
-                <div class="message-bubble">
-                    Hello. Let's get you a real cash offer.
+        <!-- Step 0: Intent Lock -->
+        <div class="form-section active" id="intent-section">
+            <h2 style="text-align: center; margin-bottom: 20px;">What's your goal today?</h2>
+            <div class="intent-toggle">
+                <div class="intent-option selected" onclick="selectIntent('sell-only')">
+                    💵 Sell Only
+                </div>
+                <div class="intent-option" onclick="selectIntent('open-to-trade')">
+                    🔄 Open to Trade
                 </div>
             </div>
-        </div>
-        
-        <!-- Dynamic Input Area -->
-        <div id="dynamicInputArea">
-            <!-- VIN Input - Mobile Optimized -->
-            <div class="input-group" id="vinInput">
-                <input type="text" 
-                       class="input-field" 
-                       placeholder="Enter 17-character VIN" 
-                       maxlength="17" 
-                       id="vinField"
-                       autocomplete="off"
-                       autocorrect="off"
-                       autocapitalize="characters"
-                       pattern="[A-HJ-NPR-Z0-9]{17}"
-                       inputmode="text">
-                <button class="btn" onclick="submitVIN()" id="vinSubmitBtn">Submit VIN</button>
-            </div>
-            <p style="text-align: center; color: #666; font-size: 14px; margin-top: 10px;">
-                Example: 5YJSA1DN5DFP14705
+            <p style="text-align: center; color: #666; margin: 20px 0;">
+                We'll respect your choice throughout the entire experience
             </p>
+            <button class="btn" onclick="proceedFromIntent()">Continue</button>
         </div>
         
-        <!-- Hidden sections to be shown progressively -->
-        <div id="conditionSection" style="display: none;">
-            <h3>Vehicle Condition</h3>
-            <div class="condition-options">
-                <div class="condition-card" onclick="selectCondition('excellent', event)">
-                    <h4>Excellent</h4>
-                    <p>Like new, no issues</p>
+        <!-- Step 1: Vehicle Details -->
+        <div class="form-section" id="vehicle-section">
+            <h2>Tell us about your vehicle</h2>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>VIN Number <span class="required">*</span></label>
+                    <input type="text" class="input-field" id="vin" 
+                           placeholder="17-character VIN (e.g., 5YJSA1DN5DFP14705)" 
+                           maxlength="17" autocapitalize="characters">
+                    <div class="helper-text">Located on driver's side dashboard or door jamb</div>
                 </div>
-                <div class="condition-card" onclick="selectCondition('good', event)">
-                    <h4>Good</h4>
-                    <p>Minor wear, fully functional</p>
-                </div>
-                <div class="condition-card" onclick="selectCondition('fair', event)">
-                    <h4>Fair</h4>
-                    <p>Some issues, driveable</p>
-                </div>
-                <div class="condition-card" onclick="selectCondition('poor', event)">
-                    <h4>Poor</h4>
-                    <p>Major issues needed</p>
-                </div>
-            </div>
-            <button class="btn" onclick="submitCondition()">Continue</button>
-        </div>
-        
-        <div id="historySection" style="display: none;">
-            <h3>Accident History</h3>
-            <div class="input-group">
-                <select class="input-field" id="accidentHistory">
-                    <option value="">Select accident history</option>
-                    <option value="none">No accidents</option>
-                    <option value="minor">Minor accident(s)</option>
-                    <option value="major">Major accident(s)</option>
-                </select>
-                <button class="btn" onclick="submitHistory()">Continue</button>
-            </div>
-        </div>
-        
-        <div id="imageSection" style="display: none;">
-            <h3 style="margin-bottom: 20px;">Upload Vehicle Images</h3>
-            <div class="image-upload" id="imageUploadArea">
-                <div class="image-upload-icon">📸</div>
-                <p class="main-text">Add Photos</p>
-                <p class="sub-text">Tap to select or drag & drop</p>
-                <p class="sub-text" style="font-size: 12px;">Add multiple photos for better valuation</p>
-            </div>
-            <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
-            <div class="image-preview" id="imagePreview"></div>
-            <button class="btn" onclick="submitImages()" style="margin-top: 30px;">Generate Offer</button>
-        </div>
-        
-        <div id="offerSection" style="display: none;">
-            <div class="offer-display">
-                <h2>Your Cash Offer</h2>
-                <div class="offer-amount" id="offerAmount">$--,---</div>
-                <p>Valid for 7 days</p>
-                <button class="btn" onclick="acceptOffer()" style="background: white; color: #667eea; margin-top: 20px;">Accept Offer</button>
-            </div>
-        </div>
-        
-        <div id="acceptedSection" style="display: none;">
-            <div style="background: #f0fff4; border: 2px solid #4caf50; border-radius: 15px; padding: 20px; margin-top: 20px;">
-                <h2 style="color: #4caf50; text-align: center; font-size: 24px;">✓ Offer Accepted!</h2>
-                <p style="text-align: center; font-size: 16px; margin: 15px 0;">Thank you for accepting our offer of <strong id="acceptedAmount" style="font-size: 20px;">$--,---</strong></p>
                 
-                <div style="background: white; border-radius: 10px; padding: 20px; margin-top: 20px;">
-                    <h3 style="color: #333; margin-bottom: 20px; font-size: 20px;">What Happens Next:</h3>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">1</div>
-                            <div>
-                                <strong style="font-size: 16px;">Dealer Contact (Within 24 Hours)</strong>
-                                <p style="color: #666; margin-top: 5px; font-size: 14px;">A buying specialist from our dealer network will contact you to schedule your preferred appointment method.</p>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">2</div>
-                            <div>
-                                <strong style="font-size: 16px;">Choose Your Appointment Type</strong>
-                                <p style="color: #666; margin-top: 5px; font-size: 14px;">
-                                    <strong>In-Person:</strong> Vehicle inspection at your location<br>
-                                    <strong>Virtual:</strong> Zoom walkthrough for paperwork
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div style="display: flex; align-items: start; margin-bottom: 20px;">
-                            <div style="background: #667eea; color: white; border-radius: 50%; min-width: 32px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-right: 15px; flex-shrink: 0; font-weight: bold;">3</div>
-                            <div>
-                                <strong style="font-size: 16px;">Complete the Sale</strong>
-                                <p style="color: #666; margin-top: 5px; font-size: 14px;">We handle all paperwork, payment, and vehicle pickup.</p>
-                            </div>
-                        </div>
+                <div class="form-group">
+                    <label>Current Mileage <span class="required">*</span></label>
+                    <input type="number" class="input-field" id="mileage" 
+                           placeholder="e.g., 45000">
+                </div>
+                
+                <div class="form-group">
+                    <label>ZIP Code <span class="required">*</span></label>
+                    <input type="text" class="input-field" id="zip" 
+                           placeholder="e.g., 90210" maxlength="5">
+                </div>
+                
+                <div class="form-group">
+                    <label>Title Status <span class="required">*</span></label>
+                    <select class="input-field" id="title-status">
+                        <option value="">Select status</option>
+                        <option value="clean">Clean - I own it</option>
+                        <option value="lien">Lien - I have a loan</option>
+                        <option value="salvage">Salvage/Rebuilt</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Do you have both keys? <span class="required">*</span></label>
+                    <select class="input-field" id="keys">
+                        <option value="">Select</option>
+                        <option value="yes">Yes - Both keys</option>
+                        <option value="no">No - Only one key</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="vehicle-info" style="display: none; padding: 20px; background: #f0f4ff; border-radius: 12px; margin: 20px 0;">
+                <h3 style="margin-bottom: 10px;">Vehicle Detected:</h3>
+                <p id="vehicle-details" style="font-size: 18px; color: #333;"></p>
+            </div>
+            
+            <button class="btn" onclick="submitVehicleDetails()">Continue to Condition</button>
+        </div>
+        
+        <!-- Step 2: Quick Condition -->
+        <div class="form-section" id="condition-section">
+            <h2>Quick Condition Check (60 seconds)</h2>
+            <p style="color: #666; margin-bottom: 20px;">Just 5 quick questions about your vehicle's condition</p>
+            
+            <div class="condition-grid">
+                <div class="condition-item">
+                    <span class="condition-question">Tires have ≥4/32" tread?</span>
+                    <div class="condition-buttons">
+                        <button class="condition-btn" onclick="setCondition('tires', true, this)">Yes</button>
+                        <button class="condition-btn" onclick="setCondition('tires', false, this)">No</button>
                     </div>
-                    
-                    <div style="background: #f8f9fa; border-radius: 10px; padding: 15px;">
-                        <p style="margin: 0; font-size: 14px;"><strong>💡 Tip:</strong> Have your vehicle title and registration ready.</p>
+                </div>
+                
+                <div class="condition-item">
+                    <span class="condition-question">Windshield crack-free?</span>
+                    <div class="condition-buttons">
+                        <button class="condition-btn" onclick="setCondition('windshield', true, this)">Yes</button>
+                        <button class="condition-btn" onclick="setCondition('windshield', false, this)">No</button>
                     </div>
-                    
-                    <div style="text-align: center; margin-top: 25px;">
-                        <p style="color: #666; font-size: 14px;">Questions? Call us at</p>
-                        <p style="font-size: 22px; color: #667eea; font-weight: bold; margin: 10px 0;">1-800-CASH-NOW</p>
-                        <p style="color: #999; font-size: 12px;">Reference ID: <span id="referenceId">CO-2025-</span></p>
+                </div>
+                
+                <div class="condition-item">
+                    <span class="condition-question">No warning lights on?</span>
+                    <div class="condition-buttons">
+                        <button class="condition-btn" onclick="setCondition('lights', true, this)">Yes</button>
+                        <button class="condition-btn" onclick="setCondition('lights', false, this)">No</button>
                     </div>
+                </div>
+                
+                <div class="condition-item">
+                    <span class="condition-question">No accidents/airbag deployment?</span>
+                    <div class="condition-buttons">
+                        <button class="condition-btn" onclick="setCondition('accidents', true, this)">Yes</button>
+                        <button class="condition-btn" onclick="setCondition('accidents', false, this)">No</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Anything else we should know? (optional)</label>
+                <textarea class="input-field" id="additional-notes" rows="3" 
+                          placeholder="e.g., minor scratches, recent maintenance, etc."></textarea>
+            </div>
+            
+            <div class="photo-upload-area" id="photo-upload" onclick="document.getElementById('photo-input').click()">
+                <div class="upload-icon">📸</div>
+                <h3>Add Photos (Optional)</h3>
+                <p>Upload 5 photos for higher confidence in your offer</p>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    Front • Rear • Driver Side • Interior • Odometer
+                </p>
+            </div>
+            <input type="file" id="photo-input" multiple accept="image/*" style="display: none;">
+            <div class="photo-grid" id="photo-preview"></div>
+            
+            <button class="btn" onclick="submitCondition()">Get My Instant Offer</button>
+        </div>
+        
+        <!-- Step 3: Offer Display -->
+        <div class="form-section" id="offer-section">
+            <div class="offer-card">
+                <div class="offer-header">
+                    <h2>Your Instant Cash Offer</h2>
+                    <div class="offer-amount" id="offer-amount">$--,---</div>
+                    <div class="confidence-band" id="confidence-band">Confidence: ±$250 without photos</div>
+                    <div class="offer-validity">✓ Valid for 7 days or 300 miles</div>
+                </div>
+                
+                <div class="offer-why">
+                    <h3>Why this price?</h3>
+                    <ul id="offer-reasons">
+                        <li>Based on 15 similar vehicles sold in your area</li>
+                        <li>Current regional demand: High</li>
+                        <li>Standard reconditioning costs applied</li>
+                    </ul>
+                </div>
+                
+                <div class="offer-actions">
+                    <button class="offer-btn primary" onclick="acceptOffer()">Accept & Continue</button>
+                    <button class="offer-btn secondary" onclick="inviteLocalOffers()">Let Locals Compete (2hr)</button>
+                    <button class="offer-btn secondary" onclick="saveAndShare()">Save & Share</button>
+                </div>
+            </div>
+            
+            <div id="local-auction" style="display: none; margin-top: 20px;">
+                <div style="background: #fff3cd; padding: 20px; border-radius: 12px;">
+                    <h3>🔔 Local Dealers Notified</h3>
+                    <p>Pre-vetted dealers have 2 hours to beat your instant offer. We'll notify you if a higher offer comes in.</p>
+                    <p style="margin-top: 10px;"><strong>Time remaining: <span id="auction-timer">2:00:00</span></strong></p>
                 </div>
             </div>
         </div>
         
-        <div id="handoffSection" style="display: none;">
-            <div class="handoff-notice">
-                <h3>🤝 Connecting You with a Specialist</h3>
-                <p>I need to connect you with one of our expert buyers to better assist with your specific situation. They'll be with you shortly!</p>
+        <!-- Step 4: Documents -->
+        <div class="form-section" id="docs-section">
+            <h2>Upload Documents</h2>
+            <p style="color: #666; margin-bottom: 20px;">We need a few documents to finalize your sale</p>
+            
+            <div class="doc-upload-grid">
+                <div class="doc-upload-item" id="doc-license">
+                    <div class="doc-upload-header">
+                        <span class="doc-title">Driver's License</span>
+                        <span class="doc-status pending">Required</span>
+                    </div>
+                    <p class="doc-description">Front and back of your valid driver's license</p>
+                    <button class="doc-upload-btn" onclick="uploadDocument('license')">Upload License</button>
+                </div>
+                
+                <div class="doc-upload-item" id="doc-title">
+                    <div class="doc-upload-header">
+                        <span class="doc-title">Vehicle Title</span>
+                        <span class="doc-status pending">Required</span>
+                    </div>
+                    <p class="doc-description">Front and back of title (or lien holder info)</p>
+                    <button class="doc-upload-btn" onclick="uploadDocument('title')">Upload Title</button>
+                </div>
+                
+                <div class="doc-upload-item" id="doc-registration">
+                    <div class="doc-upload-header">
+                        <span class="doc-title">Registration</span>
+                        <span class="doc-status pending">Required</span>
+                    </div>
+                    <p class="doc-description">Current vehicle registration</p>
+                    <button class="doc-upload-btn" onclick="uploadDocument('registration')">Upload Registration</button>
+                </div>
             </div>
+            
+            <div id="lien-info" style="display: none; margin: 20px 0;">
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 12px;">
+                    <h3>Lien Information</h3>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Lender Name</label>
+                            <input type="text" class="input-field" id="lender-name" placeholder="e.g., Bank of America">
+                        </div>
+                        <div class="form-group">
+                            <label>Estimated Payoff</label>
+                            <input type="number" class="input-field" id="payoff-amount" placeholder="e.g., 15000">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="submitDocuments()">Continue to Schedule</button>
+        </div>
+        
+        <!-- Step 5: Schedule -->
+        <div class="form-section" id="schedule-section">
+            <h2>Schedule Your Sale</h2>
+            <p style="color: #666; margin-bottom: 20px;">Choose how you'd like to complete the sale</p>
+            
+            <div class="schedule-options">
+                <div class="schedule-card" onclick="selectScheduleType('pickup', this)">
+                    <div class="schedule-icon">🚚</div>
+                    <div class="schedule-title">We Pick Up</div>
+                    <div class="schedule-desc">Free pickup at your location</div>
+                </div>
+                <div class="schedule-card" onclick="selectScheduleType('dropoff', this)">
+                    <div class="schedule-icon">🏢</div>
+                    <div class="schedule-title">You Drop Off</div>
+                    <div class="schedule-desc">Bring to nearest location</div>
+                </div>
+            </div>
+            
+            <div id="schedule-details" style="display: none;">
+                <h3 style="margin: 30px 0 20px;">Select a time slot (next 72 hours)</h3>
+                <div class="time-slots" id="time-slots">
+                    <!-- Time slots will be dynamically generated -->
+                </div>
+            </div>
+            
+            <button class="btn" id="schedule-btn" style="display: none;" onclick="confirmSchedule()">Confirm Schedule</button>
+        </div>
+        
+        <!-- Step 6: Payment -->
+        <div class="form-section" id="payment-section">
+            <h2>Choose Your Payment Method</h2>
+            <p style="color: #666; margin-bottom: 20px;">How would you like to receive your payment?</p>
+            
+            <div class="schedule-options">
+                <div class="schedule-card" onclick="selectPayment('ach', this)">
+                    <div class="schedule-icon">🏦</div>
+                    <div class="schedule-title">ACH Transfer</div>
+                    <div class="schedule-desc">Next business day</div>
+                </div>
+                <div class="schedule-card" onclick="selectPayment('check', this)">
+                    <div class="schedule-icon">📝</div>
+                    <div class="schedule-title">Cashier's Check</div>
+                    <div class="schedule-desc">On pickup/drop-off</div>
+                </div>
+            </div>
+            
+            <div id="ach-details" style="display: none; margin: 30px 0;">
+                <div style="background: #f0f4ff; padding: 20px; border-radius: 12px;">
+                    <h3>Bank Account Details</h3>
+                    <div class="form-grid" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label>Account Holder Name</label>
+                            <input type="text" class="input-field" id="account-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Routing Number</label>
+                            <input type="text" class="input-field" id="routing-number" maxlength="9">
+                        </div>
+                        <div class="form-group">
+                            <label>Account Number</label>
+                            <input type="text" class="input-field" id="account-number">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn" onclick="finalizeSale()">Complete Sale</button>
+        </div>
+        
+        <!-- Success State -->
+        <div class="form-section" id="success-section">
+            <div class="success-card">
+                <div class="success-icon">✅</div>
+                <h2 class="success-title">Sale Confirmed!</h2>
+                <p class="success-message">
+                    Your offer of <strong id="final-amount">$--,---</strong> has been accepted.<br>
+                    <br>
+                    <strong>What happens next:</strong><br>
+                    • You'll receive a confirmation email with all details<br>
+                    • We'll <span id="final-schedule">pick up your vehicle</span> on <span id="final-date">--</span><br>
+                    • Payment will be processed via <span id="final-payment">--</span><br>
+                    <br>
+                    Your reference number: <strong id="reference-number">CO-2025-XXXXX</strong>
+                </p>
+            </div>
+            <button class="btn btn-secondary" onclick="window.print()">Print Details</button>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading" style="display: none;">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <h3 id="loading-text">Processing...</h3>
         </div>
     </div>
     
     <script>
-        // Configuration - UPDATE THIS WITH YOUR VERCEL BACKEND URL
-        const API_URL = 'https://cashofferai-backend.vercel.app/api';
+        // State Management
+        let appState = {
+            intent: 'sell-only',
+            currentStep: 'intent',
+            vehicleData: {},
+            conditionData: {},
+            photos: [],
+            offerAmount: 0,
+            confidenceBand: 250,
+            documents: {
+                license: false,
+                title: false,
+                registration: false
+            },
+            scheduleType: null,
+            scheduleSlot: null,
+            paymentMethod: null,
+            referenceId: null
+        };
         
-        let currentStep = 1;
-        let vehicleData = {};
-        let conversationId = generateId();
-        
-        function generateId() {
-            return 'conv_' + Math.random().toString(36).substr(2, 9);
+        // Intent Selection
+        function selectIntent(intent) {
+            appState.intent = intent;
+            document.querySelectorAll('.intent-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
         }
         
-        // Add message to chat with collapse functionality
-        function addMessage(content, isUser = false) {
-            const chatContainer = document.getElementById('chatContainer');
+        function proceedFromIntent() {
+            moveToSection('vehicle');
+            updateProgress('offer');
+        }
+        
+        // Vehicle Details
+        async function submitVehicleDetails() {
+            const vin = document.getElementById('vin').value.trim().toUpperCase();
+            const mileage = document.getElementById('mileage').value;
+            const zip = document.getElementById('zip').value;
+            const titleStatus = document.getElementById('title-status').value;
+            const keys = document.getElementById('keys').value;
             
-            // Collapse all previous messages
-            const existingMessages = chatContainer.querySelectorAll('.message');
-            existingMessages.forEach(msg => {
-                msg.classList.add('collapsed');
-            });
+            // Validation
+            if (!vin || vin.length !== 17) {
+                alert('Please enter a valid 17-character VIN');
+                return;
+            }
+            if (!mileage || !zip || !titleStatus || !keys) {
+                alert('Please fill in all required fields');
+                return;
+            }
             
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
-            messageDiv.innerHTML = `
-                <div class="message-bubble">${content}</div>
-            `;
+            // Show loading
+            showLoading('Decoding your vehicle...');
             
-            // Add click to expand collapsed messages
-            messageDiv.querySelector('.message-bubble').addEventListener('click', function() {
-                if (messageDiv.classList.contains('collapsed')) {
-                    // Collapse all messages first
-                    chatContainer.querySelectorAll('.message').forEach(msg => {
-                        msg.classList.add('collapsed');
-                    });
-                    // Then expand the clicked one
-                    messageDiv.classList.remove('collapsed');
-                }
-            });
+            // Store data
+            appState.vehicleData = {
+                vin, mileage, zip, titleStatus, keys
+            };
             
-            chatContainer.appendChild(messageDiv);
-            
-            // Smooth scroll to the new message
+            // Simulate API call (replace with actual backend call)
             setTimeout(() => {
-                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }, 100);
-        }
-        
-        // VIN Submission
-        async function submitVIN() {
-            const vin = document.getElementById('vinField').value.toUpperCase();
-            const submitBtn = document.getElementById('vinSubmitBtn');
-            
-            if (vin.length !== 17) {
-                alert('Enter all 17 characters of your VIN. Check your dashboard or door frame.');
-                return;
-            }
-            
-            addMessage(vin, true);
-            
-            // Disable button and show loading
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Decoding...';
-            
-            try {
-                const response = await fetch(`${API_URL}/vehicle/decode`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ vin })
-                });
+                // Mock vehicle data
+                appState.vehicleData.year = 2020;
+                appState.vehicleData.make = 'Tesla';
+                appState.vehicleData.model = 'Model 3';
+                appState.vehicleData.trim = 'Long Range';
                 
-                const data = await response.json();
+                // Show vehicle info
+                document.getElementById('vehicle-info').style.display = 'block';
+                document.getElementById('vehicle-details').textContent = 
+                    `${appState.vehicleData.year} ${appState.vehicleData.make} ${appState.vehicleData.model} ${appState.vehicleData.trim}`;
                 
-                if (data.success) {
-                    vehicleData = data.vehicle;
-                    vehicleData.baseValue = data.baseValue;
-                    vehicleData.marketValue = data.marketValue;
-                    
-                    // Build detailed message with available data
-                    let message = `Great! I found your ${vehicleData.year} ${vehicleData.make} ${vehicleData.model}`;
-                    
-                    if (vehicleData.trim) {
-                        message += ` ${vehicleData.trim}`;
-                    }
-                    
-                    message += `.`;
-                    
-                    // Add additional details if available
-                    const details = [];
-                    if (vehicleData.bodyClass) details.push(`Body: ${vehicleData.bodyClass}`);
-                    if (vehicleData.transmission) details.push(`Transmission: ${vehicleData.transmission}`);
-                    if (vehicleData.fuelType) details.push(`Fuel: ${vehicleData.fuelType}`);
-                    if (vehicleData.driveType) details.push(`Drive: ${vehicleData.driveType}`);
-                    
-                    if (details.length > 0) {
-                        message += ` ${details.join(', ')}.`;
-                    }
-                    
-                    // Add value information
-                    if (vehicleData.marketValue) {
-                        message += ` Original MSRP: $${vehicleData.marketValue.toLocaleString()}.`;
-                    }
-                    message += ` Estimated value: $${vehicleData.baseValue.toLocaleString()}.`;
-                    
-                    message += ` Now, let's assess the condition of your vehicle.`;
-                    
-                    addMessage(message, false);
-                    
-                    moveToStep(2);
-                    document.getElementById('vinInput').style.display = 'none';
-                    document.getElementById('conditionSection').style.display = 'block';
-                    
-                } else {
-                    addMessage(`Can't decode that VIN. ${data.error || 'Double-check the characters and try again.'}`);
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Submit VIN';
+                hideLoading();
+                
+                // Show lien info if needed
+                if (titleStatus === 'lien') {
+                    document.getElementById('lien-info').style.display = 'block';
                 }
                 
-            } catch (error) {
-                console.error('Error:', error);
-                addMessage('Connection problem. Check your internet and try again.', false);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Submit VIN';
-                checkForHandoff();
-            }
+                // Move to next step
+                setTimeout(() => {
+                    moveToSection('condition');
+                }, 1500);
+            }, 1500);
         }
         
-        // Condition Selection
-        let selectedCondition = null;
-        
-        function selectCondition(condition, event) {
-            selectedCondition = condition;
-            document.querySelectorAll('.condition-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
-        }
-        
-        async function submitCondition() {
-            if (!selectedCondition) {
-                alert('Select your vehicle condition to continue.');
-                return;
-            }
+        // Condition Assessment
+        function setCondition(type, value, button) {
+            appState.conditionData[type] = value;
             
-            addMessage(`Condition: ${selectedCondition}`, true);
-            vehicleData.condition = selectedCondition;
-            
-            addMessage('Thanks! Now I need to know about any accident history.', false);
-            
-            moveToStep(3);
-            document.getElementById('conditionSection').style.display = 'none';
-            document.getElementById('historySection').style.display = 'block';
-        }
-        
-        // History Submission
-        async function submitHistory() {
-            const history = document.getElementById('accidentHistory').value;
-            if (!history) {
-                alert('Select accident history to continue.');
-                return;
-            }
-            
-            addMessage(`Accident history: ${history}`, true);
-            vehicleData.accidentHistory = history;
-            
-            addMessage('Perfect! Finally, please upload some photos of your vehicle so I can finalize your offer.', false);
-            
-            moveToStep(4);
-            document.getElementById('historySection').style.display = 'none';
-            document.getElementById('imageSection').style.display = 'block';
-        }
-        
-        // Image Upload with drag & drop
-        let uploadedImages = [];
-        
-        // Click to upload
-        const uploadArea = document.getElementById('imageUploadArea');
-        const imageInput = document.getElementById('imageInput');
-        
-        if (uploadArea) {
-            uploadArea.addEventListener('click', () => {
-                imageInput.click();
+            // Update button states
+            const buttons = button.parentElement.querySelectorAll('.condition-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('selected-yes', 'selected-no');
             });
             
-            // Drag and drop for desktop
-            uploadArea.addEventListener('dragover', (e) => {
+            if (value) {
+                button.classList.add('selected-yes');
+            } else {
+                button.classList.add('selected-no');
+            }
+        }
+        
+        // Photo Upload
+        document.getElementById('photo-input')?.addEventListener('change', function(e) {
+            handlePhotoUpload(e.target.files);
+        });
+        
+        // Drag and drop
+        const photoUpload = document.getElementById('photo-upload');
+        if (photoUpload) {
+            photoUpload.addEventListener('dragover', (e) => {
                 e.preventDefault();
-                uploadArea.classList.add('dragover');
+                photoUpload.classList.add('dragover');
             });
             
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('dragover');
+            photoUpload.addEventListener('dragleave', () => {
+                photoUpload.classList.remove('dragover');
             });
             
-            uploadArea.addEventListener('drop', (e) => {
+            photoUpload.addEventListener('drop', (e) => {
                 e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                
-                const files = e.dataTransfer.files;
-                handleFiles(files);
+                photoUpload.classList.remove('dragover');
+                handlePhotoUpload(e.dataTransfer.files);
             });
         }
         
-        // File input change
-        if (imageInput) {
-            imageInput.addEventListener('change', (e) => {
-                handleFiles(e.target.files);
-            });
-        }
-        
-        function handleFiles(files) {
-            const preview = document.getElementById('imagePreview');
+        function handlePhotoUpload(files) {
+            const preview = document.getElementById('photo-preview');
             
             for (let file of files) {
                 if (!file.type.startsWith('image/')) continue;
+                if (appState.photos.length >= 5) {
+                    alert('Maximum 5 photos allowed');
+                    break;
+                }
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const imageId = 'img_' + Math.random().toString(36).substr(2, 9);
+                    const photoId = 'photo_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     
-                    const imageContainer = document.createElement('div');
-                    imageContainer.className = 'image-preview-item';
-                    imageContainer.id = imageId;
+                    const photoItem = document.createElement('div');
+                    photoItem.className = 'photo-item';
+                    photoItem.id = photoId;
                     
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     
                     const removeBtn = document.createElement('div');
-                    removeBtn.className = 'image-remove';
+                    removeBtn.className = 'photo-remove';
                     removeBtn.innerHTML = '×';
-                    removeBtn.onclick = () => removeImage(imageId);
+                    removeBtn.onclick = () => removePhoto(photoId);
                     
-                    imageContainer.appendChild(img);
-                    imageContainer.appendChild(removeBtn);
-                    preview.appendChild(imageContainer);
+                    photoItem.appendChild(img);
+                    photoItem.appendChild(removeBtn);
+                    preview.appendChild(photoItem);
                     
-                    uploadedImages.push({
-                        id: imageId,
+                    appState.photos.push({
+                        id: photoId,
                         data: e.target.result
                     });
+                    
+                    // Update confidence band
+                    if (appState.photos.length >= 3) {
+                        appState.confidenceBand = 100;
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         }
         
-        function removeImage(imageId) {
-            const element = document.getElementById(imageId);
-            if (element) {
-                element.remove();
-                uploadedImages = uploadedImages.filter(img => img.id !== imageId);
+        function removePhoto(photoId) {
+            document.getElementById(photoId)?.remove();
+            appState.photos = appState.photos.filter(p => p.id !== photoId);
+            
+            // Update confidence band
+            if (appState.photos.length < 3) {
+                appState.confidenceBand = 250;
             }
         }
         
-        // Generate Offer
-        async function submitImages() {
-            if (uploadedImages.length === 0) {
-                alert('Add at least one photo to get your offer.');
+        // Submit Condition and Generate Offer
+        function submitCondition() {
+            const additionalNotes = document.getElementById('additional-notes').value;
+            appState.conditionData.notes = additionalNotes;
+            
+            // Check if all conditions are answered
+            const requiredConditions = ['tires', 'windshield', 'lights', 'accidents'];
+            const allAnswered = requiredConditions.every(c => c in appState.conditionData);
+            
+            if (!allAnswered) {
+                alert('Please answer all condition questions');
                 return;
             }
             
-            addMessage(`${uploadedImages.length} photos added.`, true);
-            addMessage('Calculating your cash offer now.', false);
+            showLoading('Calculating your instant offer...');
             
-            // Simulate processing time
+            // Calculate offer (mock calculation)
             setTimeout(() => {
-                const offer = calculateOffer(vehicleData);
-                displayOffer(offer);
+                calculateOffer();
+                hideLoading();
+                moveToSection('offer');
             }, 2000);
         }
         
-        function calculateOffer(data) {
-            // Use the base value from carAPI
-            let baseValue = data.baseValue || 25000;
+        function calculateOffer() {
+            // Base value (mock - would come from API)
+            let baseValue = 35000;
             
-            const conditionMultiplier = {
-                excellent: 1.0,
-                good: 0.9,
-                fair: 0.75,
-                poor: 0.5
-            };
+            // Apply condition adjustments
+            if (!appState.conditionData.tires) baseValue -= 300;
+            if (!appState.conditionData.windshield) baseValue -= 200;
+            if (!appState.conditionData.lights) baseValue -= 500;
+            if (!appState.conditionData.accidents) baseValue -= 2000;
             
-            const historyMultiplier = {
-                none: 1.0,
-                minor: 0.85,
-                major: 0.6
-            };
+            // Apply mileage adjustment
+            const avgMileage = 12000;
+            const vehicleAge = new Date().getFullYear() - (appState.vehicleData.year || 2020);
+            const expectedMileage = avgMileage * vehicleAge;
+            const mileageDiff = appState.vehicleData.mileage - expectedMileage;
+            if (mileageDiff > 0) {
+                baseValue -= (mileageDiff / 1000) * 50; // $50 per 1000 miles over
+            }
             
-            const offerAmount = baseValue * 
-                               conditionMultiplier[data.condition] * 
-                               historyMultiplier[data.accidentHistory];
+            appState.offerAmount = Math.round(baseValue);
             
-            return Math.round(offerAmount);
+            // Update offer display
+            document.getElementById('offer-amount').textContent = `$${appState.offerAmount.toLocaleString()}`;
+            document.getElementById('confidence-band').textContent = 
+                `Confidence: ±$${appState.confidenceBand} ${appState.photos.length === 0 ? 'without photos' : 'with photos'}`;
         }
         
-        function displayOffer(amount) {
-            moveToStep(5);
-            document.getElementById('imageSection').style.display = 'none';
-            document.getElementById('offerSection').style.display = 'block';
-            document.getElementById('offerAmount').textContent = `$${amount.toLocaleString()}`;
-            
-            addMessage(`🎉 Your cash offer is ready: $${amount.toLocaleString()}! This offer is valid for 7 days.`, false);
+        // Offer Actions
+        function acceptOffer() {
+            updateProgress('docs');
+            moveToSection('docs');
         }
         
-        // Step Management and Keyboard Navigation
-        function moveToStep(step) {
-            for (let i = 1; i <= 5; i++) {
-                const stepEl = document.getElementById(`step${i}`);
+        function inviteLocalOffers() {
+            document.getElementById('local-auction').style.display = 'block';
+            startAuctionTimer();
+        }
+        
+        function saveAndShare() {
+            const shareUrl = `${window.location.origin}?offer=${btoa(JSON.stringify({
+                amount: appState.offerAmount,
+                vehicle: appState.vehicleData,
+                expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+            }))}`;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('Offer link copied to clipboard!');
+            });
+        }
+        
+        // Auction Timer
+        function startAuctionTimer() {
+            let timeRemaining = 2 * 60 * 60; // 2 hours in seconds
+            const timerEl = document.getElementById('auction-timer');
+            
+            const interval = setInterval(() => {
+                const hours = Math.floor(timeRemaining / 3600);
+                const minutes = Math.floor((timeRemaining % 3600) / 60);
+                const seconds = timeRemaining % 60;
+                
+                timerEl.textContent = `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                timeRemaining--;
+                
+                if (timeRemaining < 0) {
+                    clearInterval(interval);
+                    timerEl.textContent = 'Auction ended';
+                }
+            }, 1000);
+        }
+        
+        // Document Upload
+        function uploadDocument(type) {
+            // Simulate file upload
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*,application/pdf';
+            input.onchange = (e) => {
+                if (e.target.files.length > 0) {
+                    appState.documents[type] = true;
+                    
+                    // Update UI
+                    const docItem = document.getElementById(`doc-${type}`);
+                    docItem.classList.add('uploaded');
+                    docItem.querySelector('.doc-status').textContent = 'Uploaded';
+                    docItem.querySelector('.doc-status').classList.remove('pending');
+                    docItem.querySelector('.doc-status').classList.add('uploaded');
+                    docItem.querySelector('.doc-upload-btn').textContent = 'Re-upload';
+                }
+            };
+            input.click();
+        }
+        
+        function submitDocuments() {
+            const allUploaded = Object.values(appState.documents).every(d => d === true);
+            
+            if (!allUploaded) {
+                alert('Please upload all required documents');
+                return;
+            }
+            
+            updateProgress('schedule');
+            moveToSection('schedule');
+            generateTimeSlots();
+        }
+        
+        // Schedule
+        function selectScheduleType(type, element) {
+            appState.scheduleType = type;
+            
+            document.querySelectorAll('.schedule-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            document.getElementById('schedule-details').style.display = 'block';
+            document.getElementById('schedule-btn').style.display = 'block';
+        }
+        
+        function generateTimeSlots() {
+            const slotsContainer = document.getElementById('time-slots');
+            slotsContainer.innerHTML = '';
+            
+            // Generate slots for next 3 days
+            const now = new Date();
+            const slots = [];
+            
+            for (let day = 0; day < 3; day++) {
+                const date = new Date(now);
+                date.setDate(date.getDate() + day);
+                
+                // Morning, afternoon, evening slots
+                const times = ['9:00 AM - 12:00 PM', '12:00 PM - 3:00 PM', '3:00 PM - 6:00 PM'];
+                
+                times.forEach(time => {
+                    const slotDate = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                    const slotId = `${date.toISOString().split('T')[0]}_${time}`;
+                    
+                    const slotEl = document.createElement('div');
+                    slotEl.className = 'time-slot';
+                    slotEl.innerHTML = `${slotDate}<br>${time}`;
+                    slotEl.onclick = () => selectTimeSlot(slotId, slotEl);
+                    
+                    slotsContainer.appendChild(slotEl);
+                });
+            }
+        }
+        
+        function selectTimeSlot(slotId, element) {
+            appState.scheduleSlot = slotId;
+            
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            element.classList.add('selected');
+        }
+        
+        function confirmSchedule() {
+            if (!appState.scheduleType || !appState.scheduleSlot) {
+                alert('Please select a schedule type and time slot');
+                return;
+            }
+            
+            updateProgress('money');
+            moveToSection('payment');
+        }
+        
+        // Payment
+        function selectPayment(method, element) {
+            appState.paymentMethod = method;
+            
+            document.querySelectorAll('.schedule-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            if (method === 'ach') {
+                document.getElementById('ach-details').style.display = 'block';
+            } else {
+                document.getElementById('ach-details').style.display = 'none';
+            }
+        }
+        
+        function finalizeSale() {
+            if (!appState.paymentMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            if (appState.paymentMethod === 'ach') {
+                const accountName = document.getElementById('account-name').value;
+                const routingNumber = document.getElementById('routing-number').value;
+                const accountNumber = document.getElementById('account-number').value;
+                
+                if (!accountName || !routingNumber || !accountNumber) {
+                    alert('Please fill in all bank account details');
+                    return;
+                }
+            }
+            
+            showLoading('Finalizing your sale...');
+            
+            // Generate reference number
+            appState.referenceId = 'CO-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+            
+            // Simulate API call
+            setTimeout(() => {
+                hideLoading();
+                
+                // Update success section
+                document.getElementById('final-amount').textContent = `$${appState.offerAmount.toLocaleString()}`;
+                document.getElementById('final-schedule').textContent = 
+                    appState.scheduleType === 'pickup' ? 'pick up your vehicle' : 'receive your vehicle';
+                document.getElementById('final-date').textContent = appState.scheduleSlot.split('_')[0];
+                document.getElementById('final-payment').textContent = 
+                    appState.paymentMethod === 'ach' ? 'ACH transfer (next business day)' : 'cashier\'s check';
+                document.getElementById('reference-number').textContent = appState.referenceId;
+                
+                // Show success
+                moveToSection('success');
+                
+                // Update all progress steps to completed
+                document.querySelectorAll('.progress-step').forEach(step => {
+                    step.classList.add('completed');
+                });
+            }, 2000);
+        }
+        
+        // Helper Functions
+        function moveToSection(sectionName) {
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${sectionName}-section`).classList.add('active');
+            appState.currentStep = sectionName;
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function updateProgress(step) {
+            const steps = ['offer', 'docs', 'schedule', 'money'];
+            const currentIndex = steps.indexOf(step);
+            
+            document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
                 stepEl.classList.remove('active', 'completed');
                 
-                if (i < step) {
+                if (index < currentIndex) {
                     stepEl.classList.add('completed');
-                } else if (i === step) {
+                } else if (index === currentIndex) {
                     stepEl.classList.add('active');
                 }
-            }
-            currentStep = step;
-        }
-        
-        // Add keyboard navigation for step indicators
-        document.addEventListener('DOMContentLoaded', () => {
-            const stepCircles = document.querySelectorAll('.step-circle');
-            
-            stepCircles.forEach((circle, index) => {
-                // Allow clicking on completed steps to view them
-                circle.addEventListener('click', () => {
-                    const stepNumber = index + 1;
-                    const stepElement = document.getElementById(`step${stepNumber}`);
-                    
-                    // Only allow navigating to completed or current step
-                    if (stepElement.classList.contains('completed') || stepElement.classList.contains('active')) {
-                        // Show appropriate section based on step
-                        showStepSection(stepNumber);
-                    }
-                });
-                
-                // Keyboard navigation
-                circle.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        circle.click();
-                    }
-                    
-                    // Arrow key navigation between steps
-                    if (e.key === 'ArrowRight' && index < stepCircles.length - 1) {
-                        e.preventDefault();
-                        stepCircles[index + 1].focus();
-                    }
-                    
-                    if (e.key === 'ArrowLeft' && index > 0) {
-                        e.preventDefault();
-                        stepCircles[index - 1].focus();
-                    }
-                });
             });
-        });
-        
-        // Helper function to show the appropriate section
-        function showStepSection(stepNumber) {
-            // Hide all sections
-            document.querySelectorAll('[id$="Section"], #vinInput').forEach(el => {
-                if (el.style) el.style.display = 'none';
-            });
-            
-            // Show the appropriate section
-            switch(stepNumber) {
-                case 1:
-                    const vinInput = document.getElementById('vinInput');
-                    if (vinInput) vinInput.style.display = 'flex';
-                    break;
-                case 2:
-                    const conditionSection = document.getElementById('conditionSection');
-                    if (conditionSection) conditionSection.style.display = 'block';
-                    break;
-                case 3:
-                    const historySection = document.getElementById('historySection');
-                    if (historySection) historySection.style.display = 'block';
-                    break;
-                case 4:
-                    const imageSection = document.getElementById('imageSection');
-                    if (imageSection) imageSection.style.display = 'block';
-                    break;
-                case 5:
-                    const offerSection = document.getElementById('offerSection');
-                    if (offerSection) offerSection.style.display = 'block';
-                    break;
-            }
         }
         
-        // Handoff Detection
-        async function checkForHandoff() {
-            // This would check with your backend
-            const needsHandoff = true; // Simplified for now
-            
-            if (needsHandoff) {
-                document.getElementById('handoffSection').style.display = 'block';
-                
-                // Notify backend to create handoff ticket (when implemented)
-                try {
-                    await fetch(`${API_URL}/handoff/create`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            conversationId,
-                            vehicleData,
-                            timestamp: new Date().toISOString()
-                        })
-                    });
-                } catch (error) {
-                    console.log('Handoff endpoint not yet implemented');
-                }
-            }
+        function showLoading(text = 'Processing...') {
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('loading-text').textContent = text;
         }
         
-        // Accept Offer function
-        function acceptOffer() {
-            const offerAmount = document.getElementById('offerAmount').textContent;
-            
-            // Generate a reference ID
-            const refId = 'CO-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            
-            // Hide offer section, show accepted section
-            document.getElementById('offerSection').style.display = 'none';
-            document.getElementById('acceptedSection').style.display = 'block';
-            document.getElementById('acceptedAmount').textContent = offerAmount;
-            document.getElementById('referenceId').textContent = refId;
-            
-            // Add to chat
-            addMessage('I accept the offer!', true);
-            addMessage(`Congratulations! Your offer of ${offerAmount} has been accepted. A dealer specialist will contact you within 24 hours to arrange your inspection or virtual appointment. Your reference ID is ${refId}.`, false);
-            
-            // Scroll to show the acceptance confirmation
-            document.getElementById('acceptedSection').scrollIntoView({ behavior: 'smooth' });
-            
-            // In a real app, this would send data to your backend
-            sendAcceptanceToBackend(offerAmount, refId);
-        }
-        
-        // Send acceptance data to backend (for demo purposes)
-        async function sendAcceptanceToBackend(amount, referenceId) {
-            try {
-                // This would be your actual backend endpoint
-                const response = await fetch(`${API_URL}/offer/accept`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        conversationId,
-                        vehicleData,
-                        offerAmount: amount,
-                        referenceId: referenceId,
-                        acceptedAt: new Date().toISOString()
-                    })
-                });
-                console.log('Offer acceptance recorded');
-            } catch (error) {
-                // For demo, this is okay to fail since endpoint doesn't exist yet
-                console.log('Backend endpoint not implemented yet');
-            }
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
         }
         
         // Initialize
-        console.log('Cash Offer AI initialized');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for shared offer in URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const sharedOffer = urlParams.get('offer');
+            
+            if (sharedOffer) {
+                try {
+                    const offerData = JSON.parse(atob(sharedOffer));
+                    console.log('Loaded shared offer:', offerData);
+                    // You could pre-fill the form with this data
+                } catch (e) {
+                    console.error('Invalid shared offer');
+                }
+            }
+        });
     </script>
 </body>
 </html>
