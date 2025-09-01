@@ -21,11 +21,71 @@
             overflow-x: hidden;
         }
         
+        /* Dealer Portal Link - Fixed Position */
+        .dealer-portal-link {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(30, 60, 114, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dealer-portal-link:hover {
+            background: #1e3c72;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .dealer-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* Mobile adjustment for dealer link */
+        @media (max-width: 480px) {
+            .dealer-portal-link {
+                top: 10px;
+                right: 10px;
+                padding: 8px 15px;
+                font-size: 13px;
+            }
+            
+            .dealer-portal-link span.link-text {
+                display: none; /* Hide text on very small screens */
+            }
+            
+            .dealer-portal-link.mobile-compact {
+                padding: 10px;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                justify-content: center;
+            }
+        }
+        
         .container {
             background: white;
             min-height: 100vh;
             width: 100%;
             padding: 20px;
+            padding-top: 70px; /* Add space for dealer link */
         }
         
         @media (min-width: 768px) {
@@ -42,6 +102,7 @@
                 max-width: 800px;
                 min-height: auto;
                 padding: 40px;
+                padding-top: 40px; /* Reset for desktop */
             }
         }
         
@@ -717,6 +778,12 @@
     </style>
 </head>
 <body>
+    <!-- Dealer Portal Link -->
+    <a href="dealer-signup.html" class="dealer-portal-link" title="Are you a dealer? Join our network">
+        <div class="dealer-icon">🏢</div>
+        <span class="link-text">Dealer Portal</span>
+    </a>
+    
     <div class="container">
         <h1>Cash Offer AI</h1>
         <p class="subtitle">Real offer in 2 minutes • No showroom visit</p>
@@ -970,6 +1037,21 @@
         function generateId() {
             return 'conv_' + Math.random().toString(36).substr(2, 9);
         }
+        
+        // Check screen size and adjust dealer link
+        function adjustDealerLink() {
+            const dealerLink = document.querySelector('.dealer-portal-link');
+            if (window.innerWidth <= 480) {
+                dealerLink.classList.add('mobile-compact');
+                dealerLink.innerHTML = '<div class="dealer-icon">🏢</div>';
+            } else {
+                dealerLink.classList.remove('mobile-compact');
+                dealerLink.innerHTML = '<div class="dealer-icon">🏢</div><span class="link-text">Dealer Portal</span>';
+            }
+        }
+        
+        window.addEventListener('resize', adjustDealerLink);
+        adjustDealerLink();
         
         // Show/Hide elements
         function showElement(id) {
@@ -1282,7 +1364,7 @@
         }
         
         // Accept Offer
-        function acceptOffer() {
+        async function acceptOffer() {
             const offerAmount = document.getElementById('offerAmount').textContent;
             const refId = 'CO-2025-' + Math.random().toString(36).substr(2, 9).toUpperCase();
             
@@ -1296,7 +1378,11 @@
             
             document.getElementById('acceptedSection').scrollIntoView({ behavior: 'smooth' });
             
-            sendAcceptanceToBackend(offerAmount, refId);
+            // Send acceptance data to backend
+            await sendAcceptanceToBackend(offerAmount, refId);
+            
+            // Notify dealers about the new lead
+            await notifyDealers(offerAmount, refId);
         }
         
         async function sendAcceptanceToBackend(amount, referenceId) {
@@ -1318,8 +1404,36 @@
             }
         }
         
+        async function notifyDealers(amount, referenceId) {
+            try {
+                // Find nearest dealers based on ZIP and notify them
+                await fetch(`${API_URL}/dealer/notify-lead`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        dealerId: 'nearest-dealer', // In production, find nearest dealer by ZIP
+                        leadData: {
+                            id: referenceId,
+                            vehicle: `${vehicleData.year} ${vehicleData.make} ${vehicleData.model}`,
+                            offerAmount: amount.replace(/[^0-9]/g, ''),
+                            customerName: 'Customer', // Would be collected in a real form
+                            customerPhone: 'Provided on acceptance',
+                            customerEmail: 'Provided on acceptance',
+                            zip: vehicleData.zip,
+                            mileage: vehicleData.mileage,
+                            condition: vehicleData.condition,
+                            createdAt: new Date().toISOString()
+                        }
+                    })
+                });
+                console.log('Dealers notified of new lead');
+            } catch (error) {
+                console.log('Dealer notification system pending implementation');
+            }
+        }
+        
         // Initialize
-        console.log('Cash Offer AI initialized');
+        console.log('Cash Offer AI initialized with Dealer Portal');
     </script>
 </body>
 </html>
